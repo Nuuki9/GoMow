@@ -17,7 +17,7 @@
 
 ## Change discipline
 
-- Read `docs/architecture.md`, `docs/decisions.md`, and the relevant validation evidence before changing implementation.
+- Read `docs/architecture.md`, `docs/decisions.md`, the current `docs/workboard.md`, and relevant validation evidence before changing implementation.
 - Update the decision register when an agreed architectural assumption changes.
 - Update calibration/validation records after real-world observations change a threshold.
 - When `gomow_config` or a shared module changes, reload the complete GoMow PyScript set and verify the public diagnostics before any later live use.

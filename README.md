@@ -6,13 +6,14 @@ GoMow is a Home Assistant-based decision system for a Segway Navimow i210 LiDAR 
 
 ## Status
 
-Architecture agreed. The three supplied wetness-model scripts have been reviewed and imported as a **repository-only, shadow-mode baseline**; nothing has been copied into Home Assistant or enabled for mowing control.
+Architecture agreed. The three supplied wetness-model scripts have been reviewed and imported as a **repository-only baseline**. Read-only discovery subsequently confirmed that Home Assistant already has pre-existing legacy versions in `/config/pyscript/`; the reviewed repository layout has not been copied or reloaded there.
 
 ## Documentation
 
 - [Architecture](docs/architecture.md) — models, gates, state machine, and public entity contracts.
 - [Decision register](docs/decisions.md) — agreed assumptions, decisions, status, and revisit triggers.
-- [Implementation plan](docs/implementation-plan.md) — staged build and safe rollout process.
+- [Implementation plan](docs/implementation-plan.md) — staged build and intended scope.
+- [Workboard](docs/workboard.md) — current executable tasks, status, dependencies, and acceptance criteria.
 - [Integration observations](docs/integration-observations.md) — real NaviMower, Ecowitt, and HA entity evidence.
 - [Calibration and validation](docs/calibration-and-validation.md) — observed data, threshold tuning, and test results.
 - [Initial PyScript review](docs/pyscript-review.md) — review findings, imported baseline, and explicit remaining gaps.

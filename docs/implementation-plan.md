@@ -2,6 +2,8 @@
 
 ## 12. Implementation Sequence
 
+This is the stable architecture-level sequence. Track executable work, current status, dependencies, and acceptance criteria in the [workboard](workboard.md).
+
 ### Stage 0 — Configuration and operational foundation
 
 - Establish the central `gomow_config` module before importing any deployable PyScript. It owns installation-specific entity IDs and intentionally tunable values; scripts import only their required constants. A change to it or any shared module requires a full GoMow PyScript reload and diagnostic verification.

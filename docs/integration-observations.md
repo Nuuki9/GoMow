@@ -11,6 +11,8 @@ This document holds **observed facts** about the installed mower, gateway, firmw
 | Completion | Map-level timestamps are diagnostic/corroborating only; pending-job target-zone verification remains authoritative. | Validate normal, interrupted, cancelled, and near-complete jobs. |
 | Cutting height | Height is reported but no verified HA write control was found in the reviewed integration. | Recheck only on a later NaviMower update. |
 | Soil sensor | WH52 is planned, subject to gateway firmware and Home Assistant entity validation. | Record actual gateway, firmware, sensor IDs, units, and update cadence. |
+| Home Assistant / PyScript runtime (2026-08-04) | `Home-Assistant-Core` is running, with `/config` mounted from its Unraid appdata path. The `pyscript` and `navimower` custom integrations are installed. | Read-only discovery via Dockhand; no HA configuration or container state was changed. |
+| Existing PyScript deployment (2026-08-04) | `/config/pyscript/` contains pre-existing `reference_et.py`, `ground_wetness_score.py`, and `dew_accumulation.py`, dated before this repository work. It does **not** contain the reviewed repository's `modules/` layout. | Treat these as a legacy live baseline. Do not copy/reload the repository baseline until entity mapping and a deliberate deployment step are agreed. |
 
 ## To record when available
 
@@ -33,3 +35,4 @@ Add dated entries below. Record the source entity, exact observed transition, jo
 | Date | Component | Observation | Consequence / decision reference |
 |---|---|---|---|
 | — | — | — | — |
+| 2026-08-04 | NaviMower live state | `lawn_mower.navimow_i210_lidar_pro` is `docked` (`state_code: 0101`), reports `current_zone: All`, `current_physical_zone: Side`, and exposes a map API path. The stale `lawn_mower.navimow_old` is unavailable. `select.navimow_i210_lidar_pro_mow_zone` reports `All zones`; cutting-height controls are currently unavailable. | Use the current i210 entity only. Continue read-only discovery of map/zone completion entities before implementing tracking. |
