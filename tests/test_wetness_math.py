@@ -44,6 +44,15 @@ class ApportionDecayTests(unittest.TestCase):
             (0.0, 0.0),
         )
 
+    def test_decay_preserves_unattributed_restored_wetness(self):
+        components = wetness_math.apportion_decay_components(
+            (0.2, 0.1, 0.7), decay_amount=0.2
+        )
+        self.assertEqual(len(components), 3)
+        self.assertAlmostEqual(components[0], 0.16)
+        self.assertAlmostEqual(components[1], 0.08)
+        self.assertAlmostEqual(components[2], 0.56)
+
 
 class DewMathTests(unittest.TestCase):
     def test_dew_intensity_is_full_below_full_spread_and_zero_above_zero_spread(self):

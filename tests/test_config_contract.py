@@ -39,6 +39,9 @@ class CentralConfigurationContractTests(unittest.TestCase):
         self.assertIsNone(gomow_config.DRY_ENTER_THRESHOLD_MM)
         self.assertIsNone(gomow_config.WET_ENTER_THRESHOLD_MM)
 
+    def test_reference_et_has_an_explicit_hourly_recalculation_cadence(self):
+        self.assertEqual(gomow_config.REFERENCE_ET_RECALCULATION_TRIGGER, "period(1h)")
+
 
 if __name__ == "__main__":
     unittest.main()

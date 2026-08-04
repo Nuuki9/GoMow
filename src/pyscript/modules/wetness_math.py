@@ -12,24 +12,22 @@ MAGNUS_B_C = 237.3
 
 
 def apportion_decay(rain_score, dew_score, decay_amount):
-    """Subtract decay proportionally while preserving non-negative scores.
-
-    The returned component scores always sum to the remaining total. If decay
-    exceeds the total, both components become zero.
-    """
-    rain_score = max(float(rain_score), 0.0)
-    dew_score = max(float(dew_score), 0.0)
-    decay_amount = max(float(decay_amount), 0.0)
-    total = rain_score + dew_score
-
-    if total == 0.0 or decay_amount >= total:
-        return 0.0, 0.0
-
-    remaining_total = total - decay_amount
-    return (
-        remaining_total * (rain_score / total),
-        remaining_total * (dew_score / total),
+    """Subtract decay proportionally while preserving non-negative scores."""
+    rain_score, dew_score = apportion_decay_components(
+        (rain_score, dew_score), decay_amount
     )
+    return rain_score, dew_score
+
+
+def apportion_decay_components(component_scores, decay_amount):
+    """Proportionally subtract decay from an arbitrary component tuple."""
+    components = tuple(max(float(score), 0.0) for score in component_scores)
+    decay_amount = max(float(decay_amount), 0.0)
+    total = sum(components)
+    if total == 0.0 or decay_amount >= total:
+        return tuple(0.0 for _ in components)
+    remaining_total = total - decay_amount
+    return tuple(remaining_total * score / total for score in components)
 
 
 def dew_point_celsius(air_temperature_c, relative_humidity_pct):

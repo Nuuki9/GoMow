@@ -50,17 +50,22 @@ def components():
     return (
         _nonnegative_float(attributes.get("rain_score_mm")),
         _nonnegative_float(attributes.get("dew_score_mm")),
+        _nonnegative_float(attributes.get("unattributed_score_mm")),
     )
 
 
-def write_components(rain_score_mm, dew_score_mm, reason, extra_attributes=None):
+def write_components(
+    rain_score_mm, dew_score_mm, unattributed_score_mm, reason, extra_attributes=None
+):
     rain_score_mm = _nonnegative_float(rain_score_mm)
     dew_score_mm = _nonnegative_float(dew_score_mm)
-    total_score_mm = rain_score_mm + dew_score_mm
+    unattributed_score_mm = _nonnegative_float(unattributed_score_mm)
+    total_score_mm = rain_score_mm + dew_score_mm + unattributed_score_mm
     if total_score_mm > WETNESS_MAX_SCORE_MM:
         scale = WETNESS_MAX_SCORE_MM / total_score_mm
         rain_score_mm *= scale
         dew_score_mm *= scale
+        unattributed_score_mm *= scale
         total_score_mm = WETNESS_MAX_SCORE_MM
 
     attributes = dict(state.getattr(GROUND_WETNESS_SCORE_ENTITY) or {})
@@ -74,6 +79,7 @@ def write_components(rain_score_mm, dew_score_mm, reason, extra_attributes=None)
             "model_interpretation": "grass-surface water heuristic; not soil moisture",
             "rain_score_mm": round(rain_score_mm, 4),
             "dew_score_mm": round(dew_score_mm, 4),
+            "unattributed_score_mm": round(unattributed_score_mm, 4),
             "max_score_mm": WETNESS_MAX_SCORE_MM,
             "last_update_reason": reason,
             "last_calculated": datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -86,10 +92,11 @@ def write_components(rain_score_mm, dew_score_mm, reason, extra_attributes=None)
 
 
 def apply_delta(rain_delta_mm=0.0, dew_delta_mm=0.0, reason="model_update", extra_attributes=None):
-    rain_score_mm, dew_score_mm = components()
+    rain_score_mm, dew_score_mm, unattributed_score_mm = components()
     write_components(
         rain_score_mm + _nonnegative_float(rain_delta_mm),
         dew_score_mm + _nonnegative_float(dew_delta_mm),
+        unattributed_score_mm,
         reason,
         extra_attributes,
     )

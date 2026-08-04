@@ -17,6 +17,7 @@ from gomow_config import (
     OUTDOOR_TEMPERATURE_ENTITY,
     PRESSURE_ENTITY,
     REFERENCE_ET_ENTITY,
+    REFERENCE_ET_RECALCULATION_TRIGGER,
     SOLAR_RADIATION_ENTITY,
     WIND_MEASUREMENT_HEIGHT_M,
     WIND_SHELTER_FACTOR,
@@ -41,7 +42,25 @@ def et_safe_float(entity_id):
     return value if math.isfinite(value) else None
 
 
+def publish_reference_et_invalid(reason):
+    """Publish invalidity explicitly so downstream drying fails closed."""
+    state.set(
+        REFERENCE_ET_ENTITY,
+        "unavailable",
+        {
+            "friendly_name": "Reference ET (Hourly, Penman-Monteith)",
+            "unit_of_measurement": "mm/h",
+            "icon": "mdi:water-percent",
+            "model_version": GOMOW_MODEL_VERSION,
+            "input_valid": False,
+            "input_invalid_reason": reason,
+            "last_calculated": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        },
+    )
+
+
 @time_trigger("startup")
+@time_trigger(REFERENCE_ET_RECALCULATION_TRIGGER)
 @state_trigger(
     f"{OUTDOOR_TEMPERATURE_ENTITY}",
     f"{OUTDOOR_HUMIDITY_ENTITY}",
@@ -64,17 +83,20 @@ def update_reference_et():
         solar_w_m2,
         pressure_hpa,
     ):
-        log.warning("reference_et: skipping update because one or more inputs are invalid")
+        publish_reference_et_invalid("source_missing_or_invalid")
+        log.warning("reference_et: source input invalid; published unavailable state")
         return
     if not 0.0 <= relative_humidity_pct <= 100.0 or pressure_hpa <= 0.0:
-        log.warning("reference_et: skipping update because humidity or pressure is out of range")
+        publish_reference_et_invalid("humidity_or_pressure_out_of_range")
+        log.warning("reference_et: humidity or pressure out of range; published unavailable state")
         return
 
     location_attrs = state.getattr(HOME_LOCATION_ENTITY) or {}
     latitude = et_safe_float_attr(location_attrs, "latitude")
     longitude = et_safe_float_attr(location_attrs, "longitude")
     if latitude is None or longitude is None:
-        log.warning("reference_et: home latitude/longitude unavailable")
+        publish_reference_et_invalid("home_location_unavailable")
+        log.warning("reference_et: home latitude/longitude unavailable; published unavailable state")
         return
 
     solar_mj_m2_h = max(solar_w_m2, 0.0) * 0.0036
@@ -129,9 +151,10 @@ def update_reference_et():
 
     net_shortwave_radiation = (1 - ET_ALBEDO) * solar_mj_m2_h
     air_temperature_k = air_temperature_c + 273.16
+    cloudiness_factor = max(1.35 * cloudiness_ratio - 0.35, 0.0)
     net_longwave_radiation = ET_STEFAN_BOLTZMANN_HOURLY * (air_temperature_k**4)
     net_longwave_radiation *= 0.34 - 0.14 * math.sqrt(actual_vapour_pressure_kpa)
-    net_longwave_radiation *= 1.35 * cloudiness_ratio - 0.35
+    net_longwave_radiation *= cloudiness_factor
     net_radiation = net_shortwave_radiation - net_longwave_radiation
     soil_heat_flux = 0.1 * net_radiation if net_radiation > 0 else 0.5 * net_radiation
 
@@ -151,6 +174,7 @@ def update_reference_et():
             "icon": "mdi:water-percent",
             "state_class": "measurement",
             "model_version": GOMOW_MODEL_VERSION,
+            "input_valid": True,
             "model_interpretation": "calibrated grass-surface drying-demand heuristic",
             "net_radiation_mj_m2_h": round(net_radiation, 4),
             "wind_speed_2m_ms": round(wind_2m_ms, 3),

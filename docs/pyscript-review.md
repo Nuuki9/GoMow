@@ -21,9 +21,10 @@ tracking, or dispatch. Those remain later stages.
 | Configuration | Entity IDs and tunables duplicated in each file. | One explicit `modules/gomow_config.py`; scripts import only required values. |
 | Cross-file state access | Dew assumed an implicit shared top-level `apply_delta()` function. | Explicit `modules/wetness_store.py` API; no load-order/global-namespace dependency. |
 | Wetness ceiling | `15.0 mm`. | Agreed `1.5 mm` grass-surface interception ceiling. |
-| ET timing | Newly arrived ET rate was retrospectively applied to the preceding elapsed interval. | Prior ET rate is integrated over real elapsed time, then the new rate is stored. |
-| Component accounting | Dew expected a missing function; public attributes did not retain all timestamps. | Rain/dew component totals, rates, timestamps, reasons, and diagnostics are retained through the shared writer. |
+| ET timing and validity | Newly arrived ET rate was retrospectively applied to the preceding elapsed interval, and invalid sources left stale numeric output behind. | Prior ET rate is integrated over real elapsed time; ET now recalculates at least hourly, publishes explicit `input_valid` state, and resets drying fail-closed on invalid data. |
+| Component accounting | Dew expected a missing function; public attributes did not retain all timestamps. | Rain/dew/unattributed component totals, rates, timestamps, reasons, and diagnostics are retained through the shared writer. A restart preserves total wetness as explicitly unattributed rather than relabelling it as dew. |
 | Dew model | Accumulated whenever dew-point spread was favourable. | Conservative gates for feature enablement, active rain, frost-temperature floor, RH, wind, and sun elevation. Disabled by default pending shadow-mode validation. |
+| Twilight radiation | Low solar values could make the FAO cloudiness factor negative and reverse long-wave loss. | The cloudiness factor is clamped non-negative, so low/zero solar cannot create artificial positive net radiation. |
 | Reference ET framing | Presented as the decay driver. | Explicitly documented as a calibrated drying-demand heuristic, not a literal wet-surface evaporation observation. |
 | Safety boundary | No mower-control code in these files. | Retained: no mower service calls or dispatch logic exist in the imported baseline. |
 
@@ -44,9 +45,11 @@ The repository includes deterministic tests for:
 
 - proportional, non-negative rain/dew drying;
 - dew-point and dew-intensity maths;
-- central configuration contract and the 1.5 mm ceiling;
-- prior-rate ET integration; and
-- no dew addition while the modelled-dew feature is disabled.
+- central configuration contract, the 1.5 mm ceiling, and hourly ET recalc cadence;
+- prior-rate ET integration plus invalid-ET fail-closed handling;
+- twilight net-radiation safety;
+- no dew addition while the modelled-dew feature is disabled; and
+- preserved unattributed wetness across restart/drying.
 
 These are software-level checks only. They are not calibration evidence and do not
 permit deployment or automatic mowing.

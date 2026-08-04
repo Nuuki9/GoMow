@@ -69,6 +69,7 @@ class WetnessScriptContractTests(unittest.TestCase):
         load_module("wetness_math", MODULES / "wetness_math.py")
         load_module("wetness_store", MODULES / "wetness_store.py")
         self.ground = load_module("ground_wetness_score", SCRIPTS / "ground_wetness_score.py")
+        self.reference = load_module("reference_et", SCRIPTS / "reference_et.py")
         self.dew = load_module("dew_accumulation", SCRIPTS / "dew_accumulation.py")
 
     def tearDown(self):
@@ -82,7 +83,11 @@ class WetnessScriptContractTests(unittest.TestCase):
     def test_decay_uses_the_prior_et_rate_not_the_new_reading(self):
         self.state.values[self.config.GROUND_WETNESS_BACKING_ENTITY] = 1.0
         self.ground.restore_ground_wetness_score()
+        restored_attributes = self.state.attributes[self.config.GROUND_WETNESS_SCORE_ENTITY]
+        self.assertEqual(restored_attributes["unattributed_score_mm"], 1.0)
+        self.assertEqual(restored_attributes["dew_score_mm"], 0.0)
         self.state.values[self.config.REFERENCE_ET_ENTITY] = 0.2
+        self.state.attributes[self.config.REFERENCE_ET_ENTITY] = {"input_valid": True}
         self.ground.apply_reference_et_decay()  # establish 0.2 mm/h baseline
 
         attributes = self.state.attributes[self.config.GROUND_WETNESS_SCORE_ENTITY]
@@ -98,6 +103,42 @@ class WetnessScriptContractTests(unittest.TestCase):
         self.assertEqual(
             self.state.attributes[self.config.GROUND_WETNESS_SCORE_ENTITY]["decay_rate_mm_h"],
             0.4,
+        )
+
+    def test_invalid_reference_et_publishes_unavailable_and_resets_drying_baseline(self):
+        self.state.values[self.config.REFERENCE_ET_ENTITY] = 0.3
+        self.state.attributes[self.config.REFERENCE_ET_ENTITY] = {"input_valid": True}
+
+        self.reference.update_reference_et()
+
+        self.assertEqual(self.state.values[self.config.REFERENCE_ET_ENTITY], "unavailable")
+        self.assertFalse(self.state.attributes[self.config.REFERENCE_ET_ENTITY]["input_valid"])
+
+        self.state.values[self.config.GROUND_WETNESS_BACKING_ENTITY] = 1.0
+        self.ground.restore_ground_wetness_score()
+        self.ground.apply_reference_et_decay()
+        attributes = self.state.attributes[self.config.GROUND_WETNESS_SCORE_ENTITY]
+        self.assertEqual(attributes["decay_rate_mm_h"], 0.0)
+
+    def test_zero_solar_at_twilight_does_not_create_positive_net_radiation(self):
+        self.state.values.update(
+            {
+                self.config.OUTDOOR_TEMPERATURE_ENTITY: 10.0,
+                self.config.OUTDOOR_HUMIDITY_ENTITY: 85.0,
+                self.config.WIND_SPEED_ENTITY: 2.0,
+                self.config.SOLAR_RADIATION_ENTITY: 0.0,
+                self.config.PRESSURE_ENTITY: 1013.0,
+            }
+        )
+        self.state.attributes[self.config.HOME_LOCATION_ENTITY] = {
+            "latitude": 51.0,
+            "longitude": -1.0,
+        }
+        self.reference.update_reference_et()
+        self.assertTrue(self.state.attributes[self.config.REFERENCE_ET_ENTITY]["input_valid"])
+        self.assertLessEqual(
+            self.state.attributes[self.config.REFERENCE_ET_ENTITY]["net_radiation_mj_m2_h"],
+            0.0,
         )
 
     def test_disabled_dew_model_never_adds_wetness(self):

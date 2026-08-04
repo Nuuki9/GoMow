@@ -27,6 +27,7 @@ SUN_ENTITY = "sun.sun"
 HOME_LOCATION_ENTITY = "zone.home"
 
 REFERENCE_ET_ENTITY = "sensor.reference_et_hourly"
+REFERENCE_ET_RECALCULATION_TRIGGER = "period(1h)"
 GROUND_WETNESS_BACKING_ENTITY = "pyscript.ground_wetness_score_backing"
 GROUND_WETNESS_SCORE_ENTITY = "sensor.ground_wetness_score"
 GROUND_WETNESS_SEED_SERVICE = "pyscript.seed_ground_wetness_score"
