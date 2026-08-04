@@ -15,6 +15,7 @@ Architecture agreed. The three supplied wetness-model scripts have been reviewed
 - [Implementation plan](docs/implementation-plan.md) — staged build and intended scope.
 - [Workboard](docs/workboard.md) — current executable tasks, status, dependencies, and acceptance criteria.
 - [Verification and test plan](docs/test-plan.md) — deterministic unit, contract, pipeline, deployment, and decision-quality checks.
+- [Tuning guide](docs/tuning-guide.md) — evidence-led diagnosis and configuration alignment after deployment.
 - [Integration observations](docs/integration-observations.md) — real NaviMower, Ecowitt, and HA entity evidence.
 - [Calibration and validation](docs/calibration-and-validation.md) — observed data, threshold tuning, and test results.
 - [Initial PyScript review](docs/pyscript-review.md) — review findings, imported baseline, and explicit remaining gaps.

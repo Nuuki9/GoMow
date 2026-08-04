@@ -12,10 +12,11 @@ Use only these states: **Not started**, **In progress**, **Blocked**, **Done**, 
 
 | Workstream | Status | Completion / next evidence |
 |---|---|---|
-| Architecture and decision register | Done | DEC-001–038 recorded; device-protection, decision-quality, verification, and HA-recovery boundaries clarified. |
+| Architecture and decision register | Done | DEC-001–039 recorded; device-protection, decision-quality, verification, HA-recovery, and tuning boundaries clarified. |
 | Central PyScript configuration | Done in repository | `modules/gomow_config.py` and contract tests exist; live entity mapping remains pending. |
 | Initial ET / wetness / dew baseline | Done in repository | Reviewed scripts and 15 deterministic tests; no HA deployment. |
 | Verification plan | Done | Layered test plan defined in `test-plan.md`; future behaviour changes are test-first. |
+| Tuning guide | Done | Evidence-led troubleshooting and calibration workflow defined in `tuning-guide.md`; parameter changes remain central, reversible, and test-backed. |
 | Live Home Assistant discovery | Done | HA Core is running; PyScript and NaviMower are installed. `/config/pyscript/` contains three pre-existing legacy wetness scripts but not the reviewed repository module layout. No files were changed. |
 | Stage 0 command lifecycle/tracking | Not started | Define real NaviMower state/entity mapping and then implement pending-job/audit/hold layer. |
 | Stage 1 measured rain and `ground_dry` | Not started | Map Netatmo source semantics first; then implement deduplicated accumulation and calibrated boolean gate. |

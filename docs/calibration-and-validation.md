@@ -1,6 +1,6 @@
 # Calibration and Validation Log
 
-This is the evidence record for tuning whether GoMow recommends mowing sensibly in real lawn conditions, and for checking that its Home Assistant command tracking reflects what happened. It does not certify or replace the mower's built-in protections. Do not replace observations with assumed values.
+This is the evidence record for tuning whether GoMow recommends mowing sensibly in real lawn conditions, and for checking that its Home Assistant command tracking reflects what happened. It does not certify or replace the mower's built-in protections. Do not replace observations with assumed values. Use the [tuning guide](tuning-guide.md) to diagnose a mismatch before recording a configuration change.
 
 ## Calibration principles
 
