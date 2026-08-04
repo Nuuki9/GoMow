@@ -168,11 +168,31 @@ Required dispatcher behaviours:
 - issue no duplicate start command;
 - timeout if a start command is not acknowledged by a mowing state;
 - retain the pending job through Home Assistant restart;
+- enter an explicit recovery state after start/reload and reconcile the persisted job with a fresh mower state before any further transition;
+- never reissue a start or advance a successful-completion timestamp solely because a state/job record was restored;
 - distinguish a deliberately docked/paused mower from a failed job;
 - write a concise audit event for every transition;
 - never infer completion from elapsed duration alone.
 
-### 4.7 Manual and safety controls
+### 4.7 Home Assistant restart and reload recovery
+
+Home Assistant startup, PyScript reload, and a process outage are explicit **recovery states**, not ordinary events. Until recovery completes, GoMow may update diagnostics but must not create a new automatic job or retry an unconfirmed command.
+
+Recovery protocol:
+
+1. Restore each persisted model state. A restored wetness total is `unattributed`; rate-based models establish a new valid baseline before integrating elapsed time.
+2. Re-evaluate input health from freshly available source states. `unknown`, `unavailable`, implausible, stale, or missing persisted state leaves the relevant public decision not-ready and blocks automatic dispatch.
+3. If no pending job exists, enter `IDLE` only after the required decision inputs have recovered.
+4. If a pending job exists, read fresh NaviMower evidence and reconcile it without issuing a command:
+   - a confirmed active mower state resumes monitoring of that same immutable job;
+   - a terminal state proceeds only to evidence-based completion verification;
+   - no reliable mower evidence retains a diagnostic `RECOVERY_UNCONFIRMED`/manual-resolution state;
+   - a restored `START_REQUESTED` record is never automatically sent again.
+5. Write an audit event recording recovery result and the inputs/job evidence used.
+
+The recovery gate protects decision and command integrity; it does not alter Navimow's own operating protections.
+
+### 4.8 Manual and safety controls
 
 Create UI-adjustable helpers before enabling automatic dispatch:
 
@@ -257,7 +277,7 @@ sensor.reference_et_hourly                 # mm/h
 The persisted `pyscript.*` backing entity preserves state; the public `sensor.*` mirror supports Home Assistant statistics. The wetness engine has one score mutation entry point, preserves the invariant:
 
 ```text
-rain_score + dew_score == total_score
+rain_score + dew_score + unattributed_score == total_score
 ```
 
 and applies elapsed-time-aware ET decay with a maximum elapsed-time safety cap after outage or clock anomalies.

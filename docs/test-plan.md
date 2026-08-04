@@ -49,7 +49,8 @@ Load deployable PyScript with minimal `state`, `log`, decorators, time, and serv
 - invalid, unavailable, or stale source data pauses the affected model rather than emitting a misleading fresh result;
 - a later valid sample creates a new baseline rather than applying decay across an unknown interval;
 - feature switches, manual holds, and uncalibrated thresholds fail predictably;
-- no wetness/growth/decision module can call a mower-control service.
+- no wetness/growth/decision module can call a mower-control service;
+- startup/reload enters recovery and has no automatic-dispatch path until its explicit recovery conditions are met.
 
 ### L3 — Decision-pipeline integration tests
 
@@ -69,7 +70,13 @@ Core scenarios:
 | Conflicting inputs | Public diagnostics identify the gating reason and input-health result. |
 | Growth limiter | Air, soil temperature, and moisture response combine via the documented `min()` rule. |
 | Hysteresis chatter | Oscillation near thresholds does not rapidly toggle `ground_dry` or create dispatch churn. |
-| Restart/reload | Persisted state restores truthfully, baselines reset appropriately, and no duplicate action/state transition occurs. |
+| Restart/reload before inputs restore | Automatic dispatch remains inhibited; public diagnostics identify recovery/input freshness rather than emitting a false ready decision. |
+| Restart/reload with wetness state | Persisted total is restored as unattributed; no drying is applied across the unknown interval until a valid ET baseline exists. |
+| Restart/reload during rain | The deduplication checkpoint restores, so the next received sample is neither silently lost nor counted twice. |
+| Restart/reload after `START_REQUESTED` | The persisted job is reconciled with fresh mower state; GoMow never retries the start command automatically. |
+| Restart/reload while mowing/returning | The job monitor resumes observation only; its target-zone list and start identity remain immutable. |
+| Restart/reload after terminal state | Completion is verified only from evidence fresh relative to the persisted job, never from restored state alone. |
+| Persistence missing/corrupt | The affected model/job becomes `recovery_failed`/not-ready, preserves no invented history, and requires a manual resolution or new valid baseline. |
 | Pending-job lifecycle | Start acknowledgement, normal completion, interruption, cancellation, and timeout are classified without advancing the canonical full-mow timestamp incorrectly. |
 
 ### L4 — Home Assistant deployment and live-contract checks
@@ -131,7 +138,7 @@ Add a single command for the integration fixture suite when `tests/integration/`
 | Rain accumulation | Not implemented | L1 counter/window reset and duplicate-event tests; L3 wet-to-dry replay fixture. |
 | `ground_dry` | Not implemented | Hysteresis/dwell boundaries and stale-input contract. |
 | Growth | Not implemented | Response-curve and global-limiter tests. |
-| Job tracking/dispatch | Not implemented | Pending-job lifecycle test matrix before any live assisted command. |
+| Dispatcher/job tracking | Not implemented | Pending-job lifecycle and HA-restart recovery matrix before any live assisted command. |
 
 ## Exit criteria for a workboard item
 

@@ -11,7 +11,7 @@
 | DEC-005 | ET | Reference ET underestimates free-water-film drying; accept conservative delay. | Active | Lawn consistently dries materially earlier than score. |
 | DEC-006 | Wetness | Persisted `pyscript.*` backing entity plus public `sensor.*` mirror. | Active | HA/pyscript persistence or statistics behaviour changes. |
 | DEC-007 | Wetness | Cap elapsed decay after restart/outage/clock anomaly. | Active | Recovery behaviour proves problematic. |
-| DEC-008 | Wetness | Restored unattributed score is assigned to dew attribution with explicit diagnostic reason. | Active | Immediate post-restart rain/dew split becomes operationally important. |
+| DEC-008 | Wetness | On restore, preserve the persisted total but attribute it as `unattributed` with an explicit diagnostic reason; do not invent a rain/dew split. | Active | Immediate post-restart attribution needs a more authoritative source. |
 | DEC-009 | Wetness | Manual test seed is attributed to dew unless a test-specific source is introduced. | Active | Rain-specific testing requires a separate seed mechanism. |
 | DEC-010 | Dew | Dew point is self-derived using the shared Magnus–Tetens constants. | Active | ET formula constants change. |
 | DEC-011 | Dew | Use one tunable target overnight dew amount to derive the maximum rate. | Active | Observation demonstrates persistent scale error. |
@@ -41,5 +41,6 @@
 | DEC-035 | Configuration | Installation-specific entity IDs and intentionally tunable values live in one explicit `gomow_config` PyScript module. Scripts import only their required constants; implementation-private mathematical constants remain local. | Active | Pyscript module semantics or the project’s configuration boundary changes. |
 | DEC-036 | Protection boundary | GoMow supplements calendar scheduling only. It must not alter, bypass, or claim to replace Navimow/NaviMower built-in safeguards; calibration measures recommendation quality, not mower safety certification. | Active | A future integration exposes an explicit, user-approved safety-control interface. |
 | DEC-037 | Verification | Use layered deterministic verification: unit tests, PyScript runtime contracts, timestamped multi-module replay fixtures, deployment checks, then live decision-quality observation. New behaviour and bug fixes are test-first. | Active | A materially different implementation platform or test harness is adopted. |
+| DEC-038 | HA recovery | Treat HA start/reload as an explicit recovery state. Restore persisted model/job state, require fresh valid inputs, reconcile any pending job with current mower evidence, and never reissue a start or advance completion merely because state was restored. | Active | The state persistence or dispatcher platform changes materially. |
 
 ---
