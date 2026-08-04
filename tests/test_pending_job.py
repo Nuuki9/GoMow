@@ -121,6 +121,19 @@ class PendingJobCompletionTests(unittest.TestCase):
         self.assertFalse(result.completed)
         self.assertEqual(result.reason, "task_progress_incomplete")
 
+    def test_recovery_never_retries_an_unconfirmed_start_request(self):
+        job = PendingMowJob("gomow-test-recovery", STARTED, "2", (6, 7))
+
+        recovery = pending_job.reconcile_recovery(
+            job,
+            prior_state="START_REQUESTED",
+            mower_state="docked",
+        )
+
+        self.assertEqual(recovery.state, "RECOVERY_UNCONFIRMED")
+        self.assertFalse(recovery.dispatch_allowed)
+        self.assertEqual(recovery.reason, "start_unconfirmed_no_retry")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -32,6 +32,30 @@ class CompletionVerification:
     reason: str
 
 
+@dataclass(frozen=True)
+class RecoveryDecision:
+    """A recovery transition that cannot itself issue a mower command."""
+
+    state: str
+    dispatch_allowed: bool
+    reason: str
+
+
+def reconcile_recovery(
+    job: PendingMowJob,
+    *,
+    prior_state: str,
+    mower_state: str,
+) -> RecoveryDecision:
+    """Reconcile restored state without retrying a previously requested start."""
+    del job, mower_state
+    if prior_state == "START_REQUESTED":
+        return RecoveryDecision(
+            "RECOVERY_UNCONFIRMED", False, "start_unconfirmed_no_retry"
+        )
+    return RecoveryDecision("RECOVERY_UNCONFIRMED", False, "recovery_not_implemented")
+
+
 def verify_terminal_completion(
     job: PendingMowJob,
     *,
