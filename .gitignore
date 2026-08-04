@@ -1,0 +1,21 @@
+# Python/runtime artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Editor and local-only files
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Secrets and Home Assistant runtime state
+.env
+.env.*
+secrets*.yaml
+.storage/
+home-assistant_v2.db*
+
+# Local deployment settings and generated evidence
+local/
+artifacts/
