@@ -18,7 +18,7 @@ Use only these states: **Not started**, **In progress**, **Blocked**, **Done**, 
 | Verification plan | Done | Layered test plan defined in `test-plan.md`; future behaviour changes are test-first. |
 | Tuning guide | Done | Evidence-led troubleshooting and calibration workflow defined in `tuning-guide.md`; parameter changes remain central, reversible, and test-backed. |
 | Live Home Assistant discovery | Done | HA Core is running; PyScript and NaviMower are installed. `/config/pyscript/` contains three pre-existing legacy wetness scripts but not the reviewed repository module layout. No files were changed. |
-| Stage 0 command lifecycle/tracking | Not started | Define real NaviMower state/entity mapping and then implement pending-job/audit/hold layer. |
+| Stage 0 command lifecycle/tracking | Not started | NaviMower target-zone and terminal completion semantics now evidenced; implement pending-job/audit/hold layer without any dispatch call. |
 | Stage 1 measured rain and `ground_dry` | Not started | Map Netatmo source semantics first; then implement deduplicated accumulation and calibrated boolean gate. |
 | WH52 onboarding | Blocked | Hardware/gateway firmware and actual HA entities required. |
 | Growth model | Not started | Depends on validated temperature/soil-moisture inputs. |
@@ -29,7 +29,7 @@ Use only these states: **Not started**, **In progress**, **Blocked**, **Done**, 
 | ID | Task | Status | Acceptance criteria | Dependencies |
 |---|---|---|---|---|
 | D-01 | Discover live HA / PyScript deployment context read-only. | Done | Recorded HA/PyScript runtime and the safe repository-to-HA deployment boundary in `integration-observations.md`; no live configuration changed. | None |
-| D-02 | Record NaviMower entity IDs, state values, map/zone IDs, and completion semantics. | In progress | Live entity, map `2`, and zones Main `8` / Side `7` / Slope `6` are recorded. Observe a normal terminal user-scheduled job to establish completion-state semantics; no GoMow control action is issued. | D-01 |
+| D-02 | Record NaviMower entity IDs, state values, map/zone IDs, and completion semantics. | Done | Native Side `7` + Slope `6` run observed from start to dock: explicit task-zone list, 100% selected-task progress, two fresh per-zone completions, map completion unchanged, and unstable integration cycle IDs recorded. | D-01 |
 | D-03 | Record Netatmo rain entity IDs, units, timestamps, and update/deduplication semantics. | In progress | Candidate hourly entity is identified; observe a fresh update/reset before choosing it for `rain_accumulation.py`. | D-01 |
 | I-01 | Implement Stage 0 input-health, manual hold, audit record, pending-job state model, and reboot reconciliation. | Not started | Unit-tested repository implementation: recovery blocks automatic dispatch until fresh inputs/job reconciliation; no dispatch service call. | D-02 |
 | I-02 | Implement measured rain accumulation. | Not started | Unit-tested, handles stale/duplicate samples and exposes diagnostics. | D-03 |

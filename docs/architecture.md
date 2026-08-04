@@ -103,7 +103,7 @@ This keeps the lawn visually consistent and avoids small, inefficient partial jo
 
 NaviMower provides both **Last map mowed** and **Last map completed**. They are useful diagnostics but must not directly update the system's canonical `last_successful_full_mow` value.
 
-- **Last map mowed** means recent mowing activity in at least one zone; it is not completion evidence.
+- **Last map mowed** means recent mowing activity in at least one zone; it is not completion evidence. The 2026-08-04 two-zone observation showed it can advance at task start and again at a later zone transition.
 - **Last map completed** is useful corroboration, but map completion can reflect retained individual-zone completion history. It does not by itself prove that all zones completed in the current HA-dispatched job.
 
 A successful job is always relative to the job's immutable target-zone list.
@@ -127,7 +127,7 @@ interrupted_zone_ids
 failure_reason
 ```
 
-The target-zone list must not change after dispatch.
+The target-zone list must not change after dispatch. Integration-provided `cycle_id`/session identifiers may be retained as diagnostics, but are never the GoMow job ID or sole join key: a single native two-zone task observed on 2026-08-04 produced multiple/rewritten integration session IDs.
 
 ### 4.5 Successful completion rule
 
