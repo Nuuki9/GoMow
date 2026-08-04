@@ -5,7 +5,7 @@ This is the evidence record for tuning whether GoMow recommends mowing sensibly 
 ## Calibration principles
 
 - Tune against visible grass-surface condition and actual mower outcomes.
-- Treat WH52 moisture as a locally calibrated trend, not universal volumetric water content.
+- Treat selected soil-sensor moisture as a locally calibrated trend, not universal volumetric water content.
 - Tune wetness thresholds only after observing complete wet-to-dry cycles.
 - Record the prior value, proposed value, reason, evidence, date, and decision ID for every change.
 
@@ -21,7 +21,7 @@ This is the evidence record for tuning whether GoMow recommends mowing sensibly 
 | Restart during job | Pending state restores and resolves from fresh evidence without duplicate starts. |
 | Near-complete zone | The integration's accepted completion behaviour is understood and documented. |
 | Dew/dry-down cycle | `ground_dry` recommendation is compared with visible grass-surface condition. |
-| WH52 rain/dry cycle | Moisture and soil-temperature trends are compared with known conditions before inclusion in scheduling. |
+| Soil-sensor rain/dry cycle | Moisture and, when fitted, soil-temperature trends are compared with known conditions before inclusion in scheduling. |
 
 ## Change log
 

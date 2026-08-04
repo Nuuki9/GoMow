@@ -34,8 +34,7 @@ must remain unresolved until actual Home Assistant evidence is recorded:
 - `HOME_ELEVATION_M` is a setup TODO, not a verified site measurement.
 - Ground-dry hysteresis thresholds and minimum dry duration are deliberately `None`.
 - `ENABLE_MODELLED_DEW` is `False`.
-- WH52 entity IDs are not yet added; they require installed-version and entity
-  validation first.
+- Soil-sensor entity IDs are not yet added; the chosen WH51/WH52 installation requires installed-version and entity validation first.
 
 ## Test evidence
 

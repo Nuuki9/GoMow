@@ -10,7 +10,7 @@ This document holds **observed facts** about the installed mower, gateway, firmw
 | Zone tracking | The reviewed integration provides map/zone activity, coverage, and completion-oriented data. | Record actual entity IDs and semantics from this installation. |
 | Completion | Map-level timestamps are diagnostic/corroborating only; pending-job target-zone verification remains authoritative. | Validate normal, interrupted, cancelled, and near-complete jobs. |
 | Cutting height | Height is reported but no verified HA write control was found in the reviewed integration. | Recheck only on a later NaviMower update. |
-| Soil sensor | WH52 is planned, subject to gateway firmware and Home Assistant entity validation. | Record actual gateway, firmware, sensor IDs, units, and update cadence. |
+| Soil sensor | Select WH51 or WH52 after gateway/HA validation. Moisture is required for the later growth limiter; soil temperature is optional and EC remains diagnostic. | Record actual gateway, firmware, sensor IDs, units, and update cadence. |
 | Home Assistant / PyScript runtime (2026-08-04) | `Home-Assistant-Core` is running, with `/config` mounted from its Unraid appdata path. The `pyscript` and `navimower` custom integrations are installed. | Read-only discovery via Dockhand; no HA configuration or container state was changed. |
 | Existing PyScript deployment (2026-08-04) | `/config/pyscript/` contains pre-existing `reference_et.py`, `ground_wetness_score.py`, and `dew_accumulation.py`, dated before this repository work. It does **not** contain the reviewed repository's `modules/` layout. | Treat these as a legacy live baseline. Do not copy/reload the repository baseline until entity mapping and a deliberate deployment step are agreed. |
 

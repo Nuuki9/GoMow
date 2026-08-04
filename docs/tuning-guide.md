@@ -136,14 +136,14 @@ Growth is a global decision input. Air temperature drives shoot response; later 
 - Is a mow actually due according to the canonical successful-full-mow timestamp, rather than `last_map_mowed`?
 - Did the previous job complete and update tracking correctly?
 - Is the lawn's apparent need a whole-lawn condition or only a single zone?
-- Once available, are WH52 values representative, fresh, and calibrated?
+- Once available, are soil-sensor values representative, fresh, and calibrated?
 
 **Likely correction**
 
 - Incorrect job history: repair tracking, not growth parameters.
 - A whole-lawn systematic cadence mismatch over several cycles: adjust the documented growth-to-interval policy using replayed observations.
 - One zone consistently differs: retain the global environmental model; record evidence for the later static zone-policy revisit rather than adding a per-zone weather model.
-- WH52 unavailable/uncalibrated: leave the soil limiter out of the active decision rather than inventing a substitute value.
+- Soil sensor unavailable/uncalibrated: leave its limiter out of the active decision rather than inventing a substitute value. If temperature is absent but moisture is valid, use the air-temperature seasonal fallback.
 
 ### 5. Decision is unexpectedly blocked even though conditions look suitable
 

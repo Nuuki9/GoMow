@@ -6,8 +6,8 @@ These are not implementation blockers until their relevant stage, but must be re
 
 | Question | Required evidence / resolution |
 |---|---|
-| Does the chosen WH52 gateway firmware expose all values locally? | Confirm moisture, soil temperature, EC, battery, and signal in gateway/app. |
-| Does HA 2026.7.x expose WH52 entities correctly? | Confirm real entity IDs, units, freshness, and statistics in the installed release; update HA only under normal change control if needed. |
+| Does the selected soil-sensor gateway firmware expose the required values locally? | Confirm WH51 moisture (and, for WH52, soil temperature/EC), battery, and signal in gateway/app. |
+| Does the installed HA release expose the selected sensor entities correctly? | Confirm real entity IDs, units, freshness, and statistics; update HA only under normal change control if needed. |
 | What moisture values represent dry, healthy, and too-wet local turf? | Calibrated installation plus rain/dry-down observation history. |
 | What soil-temperature curve best represents this lawn? | At least one spring/autumn transition and observed mowing demand. |
 | Do Netatmo rain entities provide a reliable fresh event/cumulative signal? | Inspect exact entity semantics, timestamps, and duplicate behaviour before coding rain accumulation. |

@@ -19,14 +19,14 @@ This is the stable architecture-level sequence. Track executable work, current s
 - Implement correctly polarised `ground_dry` hysteresis plus minimum dry duration.
 - Run wet/dry shadow observation and tune only against actual lawn condition.
 
-### Stage 2 — WH52 onboarding and calibration
+### Stage 2 — Soil-moisture sensor onboarding and calibration
 
-- Verify gateway firmware, WH52 pairing, and Home Assistant entities for moisture, soil temperature, EC, and battery.
+- Verify gateway firmware, sensor pairing, and Home Assistant moisture/battery entities for the selected sensor.
 - Install at representative turf root depth using a pilot hole; avoid roots, hard objects, irrigation outflow, and unusual drainage locations.
 - Calibrate moisture dry/wet references and observe stabilization after installation.
 - Use moisture only as a diagnostic initially; then enable it as the growth water limiter.
-- Add soil temperature only after adequate trend history exists.
-- Retain EC as diagnostics only.
+- If a WH52 is selected, verify soil-temperature/EC entities separately; use temperature only after adequate trend history exists and retain EC as diagnostics only.
+- A WH51 deployment remains fully supported: use the medium-term air-temperature response as the seasonal/root-temperature fallback.
 
 ### Stage 3 — Growth model shadow mode
 

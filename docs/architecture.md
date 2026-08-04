@@ -225,7 +225,8 @@ Minimum initial inputs:
 | Reference ET | wetness decay | valid, non-negative |
 | Wetness backing state | `ground_dry` | restored and internally consistent |
 | NaviMower status | dispatch and completion | known and fresh enough |
-| WH52 moisture/temperature | growth model once enabled | valid, calibrated, fresh |
+| Soil moisture | growth model once enabled | valid, calibrated, fresh (WH51 or WH52) |
+| Soil temperature | optional growth limiter when enabled | valid, representative, fresh (WH52 only) |
 
 If any required value is stale, `unknown`, `unavailable`, implausible, or absent after restart:
 
@@ -383,8 +384,8 @@ All growth inputs are global in Phase 1:
 | Input | Role | Status |
 |---|---|---|
 | Outdoor air temperature | Primary proxy for shoot/leaf growth and air heat stress | available |
-| WH52 soil temperature | Root-zone thermal support and seasonal inertia | planned; enable after validation |
-| WH52 soil moisture | Root-zone water availability | planned; enable after calibration |
+| Soil temperature (optional) | Root-zone thermal support and seasonal inertia | enable only after WH52 validation; otherwise use air-temperature smoothing |
+| Soil moisture (WH51 or WH52) | Root-zone water availability | planned; enable after calibration |
 | EC | Lawn-health / fertiliser-salinity diagnostic only | planned; excluded from scheduling |
 
 No per-zone moisture, soil temperature, wetness, ET, or weather model is planned.
@@ -412,13 +413,13 @@ heat-stress onset: 30°C
 
 They will be validated against observed lawn behaviour.
 
-### 7.4 Soil temperature: root-support limiter
+### 7.4 Soil temperature: optional root-support limiter
 
-WH52 soil temperature does not replace air temperature. It adds a separate slower signal for root-zone activity and heat/cold stress.
+A validated soil-temperature sensor does not replace air temperature. It adds a separate, slower signal for root-zone activity and heat/cold stress, but is optional for Phase 1.
 
 Cool-season turf roots have a lower thermal optimum than shoots; root activity is strongest at roughly 10–18°C soil temperature and declines in persistently hot soil.[UMass turf-water-deficit guidance](references.md#umass-turf-water-deficits)[University of Nebraska heat guidance](references.md#university-of-nebraska-heat-guidance)
 
-Use an independently named and empirically tuned response curve:
+If a WH52 is chosen and its soil-temperature entity is stable, use an independently named and empirically tuned response curve:
 
 ```text
 SOIL_ROOT_BASE_C
@@ -429,20 +430,20 @@ SOIL_ROOT_STRESS_HIGH_C
 
 Do not reuse air-temperature thresholds for soil temperature.
 
-The soil-temperature response is disabled until all conditions are satisfied:
+The soil-temperature response is enabled only when all conditions are satisfied:
 
 ```text
-- WH52 is paired to a supported, current-firmware gateway.
+- A compatible sensor is paired to a supported, current-firmware gateway.
 - HA exposes a stable soil-temperature entity with correct units.
 - Placement is representative of turf root-zone conditions.
 - At least several weather cycles have been observed.
 ```
 
-Until then, the model is explicitly two-factor: air temperature plus soil moisture.
+Without a soil-temperature sensor (for example, WH51 moisture-only deployment), calculate the air response from daily values and smooth it with the standard 7-day EWMA/rolling response history. That supplies the seasonal/root-zone proxy without claiming it is a soil-temperature measurement. The optional date-only off-season block remains a separate policy backstop.
 
 ### 7.5 Soil moisture: water-availability limiter
 
-WH52 moisture replaces a second modelled soil-water-balance approach. It must be treated as a calibrated local trend, not universal volumetric water content.
+A calibrated soil-moisture sensor replaces a second modelled soil-water-balance approach. WH51 and WH52 are both supported; the reading is treated as a calibrated local trend, not universal volumetric water content.
 
 Use named local calibration points:
 
@@ -457,14 +458,17 @@ The initial `20%` and `60%` figures are placeholders only. The probe must be ins
 
 ### 7.6 Combination rule
 
-Once validated, combine the three normalized inputs using a simple limiting-factor model:
+Once validated, combine the mandatory normalized inputs and include soil temperature only when it is enabled:
 
 ```text
-growth_potential_score = min(
+limiting_responses = [
     air_shoot_growth_response,
-    soil_root_temperature_response,
-    soil_moisture_response
-)
+    soil_moisture_response,
+]
+if soil_temperature_limiter_enabled:
+    limiting_responses.append(soil_root_temperature_response)
+
+growth_potential_score = min(limiting_responses)
 ```
 
 `min()` is selected for interpretability: the most limiting necessary condition caps potential growth. It is **not** mathematically more conservative than multiplication; multiplication would always be equal to or lower than the minimum for scores between zero and one.
@@ -555,7 +559,7 @@ is distinct from:
 “Would mowing be suitable right now?”
 ```
 
-The manual seasonal block remains a conservative backstop even after WH52 soil-temperature data is available. Revisit only after at least one seasonal cycle of observed data validates the growth model.
+The manual seasonal block remains a conservative policy backstop whether a soil-temperature sensor is present or not. Revisit only after at least one seasonal cycle of observed data validates the growth model.
 
 ---
 

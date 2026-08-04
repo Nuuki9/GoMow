@@ -33,7 +33,7 @@ deploy/                  # explicit deployment/verification tooling; not populat
 
 ## Working rules
 
-- Existing device integrations remain responsible for device protocols: **NaviMower** for mower control and **Ecowitt** for the WH52.
+- Existing device integrations remain responsible for device protocols: **NaviMower** for mower control and **Ecowitt** for the selected soil sensor.
 - GoMow is the policy/orchestration layer, implemented primarily in PyScript with thin HA UI helpers and notifications at the edges.
 - Never commit secrets, Home Assistant `.storage`, database files, or raw credentials.
 - Do not deploy or enable automatic mowing as part of a documentation or code change without explicit approval and verification.
