@@ -17,14 +17,13 @@ This document holds **observed facts** about the installed mower, gateway, firmw
 ## To record when available
 
 ```text
-Home Assistant version:
-NaviMower version:
-Navimow firmware:
-Map ID and enabled zone IDs:
-Docked / mowing / paused / error entity IDs and values:
-Per-zone coverage and completion entity IDs:
-WH52 gateway model and firmware:
-WH52 moisture / soil-temperature / EC entity IDs:
+NaviMower version: custom integration exposes `navimower.export_diagnostics`; installed version still to record.
+Navimow firmware: not returned by current diagnostics.
+Map ID and enabled zone IDs: map `2` (base `22330484`); Main `8`, Side `7`, Slope `6`.
+Docked / mowing / paused / error entity IDs and values: `lawn_mower.navimow_i210_lidar_pro` currently docked (`0101`); active/terminal transitions still need observation.
+Per-zone coverage and completion entity IDs: map coverage plus diagnostic `zone_states`; all zone `last_completed_at` currently null.
+Soil-sensor gateway model and firmware:
+Soil-sensor entity IDs:
 Rain-source entity semantics and update behaviour:
 ```
 
@@ -38,3 +37,4 @@ Add dated entries below. Record the source entity, exact observed transition, jo
 | 2026-08-04 | NaviMower live state | `lawn_mower.navimow_i210_lidar_pro` is `docked` (`state_code: 0101`), reports `current_zone: All`, `current_physical_zone: Side`, and exposes a map API path. The stale `lawn_mower.navimow_old` is unavailable. `select.navimow_i210_lidar_pro_mow_zone` reports `All zones`; cutting-height controls are currently unavailable. | Use the current i210 entity only. Continue read-only discovery of map/zone completion entities before implementing tracking. |
 | 2026-08-04 | NaviMower completion and protection telemetry | `sensor.navimow_i210_lidar_pro_map_coverage` reports three zones, 0 completed zones, and `zone_states_revision: 196`. `last_map_mowed` is `2026-07-31T18:06:32+00:00`; `last_map_completed` is currently `unknown`. The mower's own rain sensor/detection, frost, snow, strong-wind, high-temperature, and rain-forecast controls are all enabled. | Retain the map timestamp as diagnostic only; do not infer a complete all-zone job from it. This confirms GoMow is additive to—not a replacement for—mower protections. |
 | 2026-08-04 | Netatmo rain | `sensor.netatmo_home_rain_sensor_rain_last_hour` is `0 mm`, `state_class: total`; `sensor.netatmo_home_rain_sensor_rain` is `0 mm`, `state_class: measurement`. Both last changed at `2026-08-03T21:29:00Z`. | Candidate source identified, but its reset/update semantics still need an observed fresh rain event before `rain_accumulation.py` is bound to it. |
+| 2026-08-04 | NaviMower read-only diagnostic export | `navimower.export_diagnostics` completed with `commands_sent: false`. It resolved map `2` (base `22330484`) and three zones: Main `8` (439.55 m²), Side `7` (208.45 m²), and Slope `6` (28.01 m²). All `last_completed_at` values are null; coverage is 4%, 8%, and 24% respectively. The existing schedule is Mon all zones (09:00–21:00) and Thu Main only (09:00–21:00). | Zone IDs and live map identity are now evidenced. Coverage and `last_map_mowed` remain diagnostics only. Completion still needs observation through a normal, user-scheduled terminal mower job before it can corroborate GoMow’s pending-job verifier. |

@@ -29,7 +29,7 @@ Use only these states: **Not started**, **In progress**, **Blocked**, **Done**, 
 | ID | Task | Status | Acceptance criteria | Dependencies |
 |---|---|---|---|---|
 | D-01 | Discover live HA / PyScript deployment context read-only. | Done | Recorded HA/PyScript runtime and the safe repository-to-HA deployment boundary in `integration-observations.md`; no live configuration changed. | None |
-| D-02 | Record NaviMower entity IDs, state values, map/zone IDs, and completion semantics. | In progress | Live mower entity identified; populate remaining map/zone/completion evidence without issuing a control action. | D-01 |
+| D-02 | Record NaviMower entity IDs, state values, map/zone IDs, and completion semantics. | In progress | Live entity, map `2`, and zones Main `8` / Side `7` / Slope `6` are recorded. Observe a normal terminal user-scheduled job to establish completion-state semantics; no GoMow control action is issued. | D-01 |
 | D-03 | Record Netatmo rain entity IDs, units, timestamps, and update/deduplication semantics. | In progress | Candidate hourly entity is identified; observe a fresh update/reset before choosing it for `rain_accumulation.py`. | D-01 |
 | I-01 | Implement Stage 0 input-health, manual hold, audit record, pending-job state model, and reboot reconciliation. | Not started | Unit-tested repository implementation: recovery blocks automatic dispatch until fresh inputs/job reconciliation; no dispatch service call. | D-02 |
 | I-02 | Implement measured rain accumulation. | Not started | Unit-tested, handles stale/duplicate samples and exposes diagnostics. | D-03 |
