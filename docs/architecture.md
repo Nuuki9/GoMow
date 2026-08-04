@@ -212,7 +212,18 @@ A manual hold always overrides all automatic logic.
 
 `binary_sensor.mower_inputs_healthy` is a separate prerequisite for dispatch. It verifies the required sensor values are numeric, plausible, fresh enough, and restored after restart.
 
-Minimum initial inputs:
+### 5.1 Configuration classes
+
+`gomow_config.py` divides entity configuration into three explicit classes:
+
+| Class | Examples | Behaviour when absent/unhealthy |
+|---|---|---|
+| **Core mandatory** | Air temperature/humidity, wind, solar, pressure, active rain, ET, wetness state, and later mower status for dispatch | The relevant decision becomes not-ready; automatic dispatch is blocked. |
+| **Enabled-capability mandatory** | Soil moisture only after `ENABLE_SOIL_MOISTURE_LIMITER` is enabled; soil temperature only after `ENABLE_SOIL_TEMPERATURE_LIMITER` is enabled | The enabled feature is not-ready; do not silently substitute or continue with a broken enabled limiter. |
+| **Optional/unbound** | `SOIL_TEMPERATURE_ENTITY` before its limiter is enabled; `SOIL_EC_ENTITY`; any future independent hardware capability | `None` means deliberately absent, not unhealthy. The model uses its documented fallback. |
+
+This makes hardware selection independent: a WH51 can provide moisture, a WH52 can provide moisture/temperature/EC, and a dedicated temperature device such as WN34S can provide only temperature. The configuration names capabilities, never product-specific entity IDs.
+
 
 | Input | Required for | Health requirement |
 |---|---|---|

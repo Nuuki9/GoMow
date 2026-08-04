@@ -25,7 +25,7 @@ This is the stable architecture-level sequence. Track executable work, current s
 - Install at representative turf root depth using a pilot hole; avoid roots, hard objects, irrigation outflow, and unusual drainage locations.
 - Calibrate moisture dry/wet references and observe stabilization after installation.
 - Use moisture only as a diagnostic initially; then enable it as the growth water limiter.
-- If a WH52 is selected, verify soil-temperature/EC entities separately; use temperature only after adequate trend history exists and retain EC as diagnostics only.
+- If soil temperature is desired, it may come from a validated WH52 **or** an independent dedicated probe (for example WN34S); bind only `SOIL_TEMPERATURE_ENTITY` and enable its limiter after adequate trend history exists.
 - A WH51 deployment remains fully supported: use the medium-term air-temperature response as the seasonal/root-temperature fallback.
 
 ### Stage 3 — Growth model shadow mode

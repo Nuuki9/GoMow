@@ -14,6 +14,14 @@ in HA; only their entity IDs belong here.
 GOMOW_MODEL_VERSION = "0.1.0-shadow"
 ENABLE_MODELLED_DEW = False
 
+# Soil-growth capabilities are intentionally independent of a particular
+# hardware model. They remain disabled until the selected device is installed,
+# calibrated and its live HA entities are validated. A soil-moisture limiter is
+# required only when that later growth capability is enabled; soil temperature
+# is always an optional additional limiter.
+ENABLE_SOIL_MOISTURE_LIMITER = False
+ENABLE_SOIL_TEMPERATURE_LIMITER = False
+
 # ---------------------------------------------------------------------
 # Shared Home Assistant entity IDs
 # ---------------------------------------------------------------------
@@ -31,6 +39,15 @@ REFERENCE_ET_RECALCULATION_TRIGGER = "period(1h)"
 GROUND_WETNESS_BACKING_ENTITY = "pyscript.ground_wetness_score_backing"
 GROUND_WETNESS_SCORE_ENTITY = "sensor.ground_wetness_score"
 GROUND_WETNESS_SEED_SERVICE = "pyscript.seed_ground_wetness_score"
+
+# Optional soil-sensor capability entities. Set a discovered, validated entity
+# ID before enabling its matching limiter. None means the capability is absent,
+# not an unhealthy required input. WH51 supplies moisture only; WH52 may supply
+# all three; a dedicated soil-temperature device (such as WN34S) may supply
+# temperature independently.
+SOIL_MOISTURE_ENTITY = None
+SOIL_TEMPERATURE_ENTITY = None
+SOIL_EC_ENTITY = None
 
 # ---------------------------------------------------------------------
 # Site and reference-ET calibration

@@ -133,7 +133,7 @@ Add a single command for the integration fixture suite when `tests/integration/`
 
 | Area | Current coverage | Next addition |
 |---|---|---|
-| Central configuration | Contract tests for common entity IDs, wetness ceiling, uncalibrated hysteresis, and ET cadence | Add every new configured source/helper ID. |
+| Central configuration | Contract tests for common entity IDs, wetness ceiling, uncalibrated hysteresis, ET cadence, and disabled/unbound optional soil capabilities | Add every new configured source/helper ID and feature-enabled health rule. |
 | ET/wetness/dew baseline | Pure math plus PyScript contracts: prior-rate integration, invalid ET fail-closed reset, twilight radiation, disabled dew, and restart attribution | Add measured rain sequence tests. |
 | Rain accumulation | Not implemented | L1 counter/window reset and duplicate-event tests; L3 wet-to-dry replay fixture. |
 | `ground_dry` | Not implemented | Hysteresis/dwell boundaries and stale-input contract. |

@@ -17,3 +17,4 @@ All notable project decisions and implementation changes are recorded here.
 - Added explicit HA/PyScript restart-recovery requirements and test matrix (DEC-038): fresh-input recovery, persisted-state reconciliation, and no automatic command replay.
 - Added evidence-led tuning governance and scenario guide (DEC-039), covering model diagnosis, one-at-a-time centrally configured changes, and test-backed calibration.
 - Made the soil-sensor architecture capability-based: WH51 moisture-only is fully supported; WH52 soil temperature is an optional validated growth limiter and EC stays diagnostic.
+- Separated core mandatory entities from optional/unbound and feature-enabled soil capabilities (DEC-040), allowing soil temperature from WH52, WN34S, or future supported hardware.

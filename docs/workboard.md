@@ -12,8 +12,8 @@ Use only these states: **Not started**, **In progress**, **Blocked**, **Done**, 
 
 | Workstream | Status | Completion / next evidence |
 |---|---|---|
-| Architecture and decision register | Done | DEC-001–039 recorded; device-protection, decision-quality, verification, HA-recovery, and tuning boundaries clarified. |
-| Central PyScript configuration | Done in repository | `modules/gomow_config.py` and contract tests exist; live entity mapping remains pending. |
+| Architecture and decision register | Done | DEC-001–040 recorded; device-protection, decision-quality, verification, HA-recovery, tuning, and capability-configuration boundaries clarified. |
+| Central PyScript configuration | Done in repository | `modules/gomow_config.py` and contract tests exist; core mandatory, optional/unbound, and feature-enabled soil capabilities are explicit. Live entity mapping remains pending. |
 | Initial ET / wetness / dew baseline | Done in repository | Reviewed scripts and 15 deterministic tests; no HA deployment. |
 | Verification plan | Done | Layered test plan defined in `test-plan.md`; future behaviour changes are test-first. |
 | Tuning guide | Done | Evidence-led troubleshooting and calibration workflow defined in `tuning-guide.md`; parameter changes remain central, reversible, and test-backed. |

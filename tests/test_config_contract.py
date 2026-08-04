@@ -42,6 +42,13 @@ class CentralConfigurationContractTests(unittest.TestCase):
     def test_reference_et_has_an_explicit_hourly_recalculation_cadence(self):
         self.assertEqual(gomow_config.REFERENCE_ET_RECALCULATION_TRIGGER, "period(1h)")
 
+    def test_optional_soil_capabilities_are_disabled_and_unbound_until_installed(self):
+        self.assertFalse(gomow_config.ENABLE_SOIL_MOISTURE_LIMITER)
+        self.assertFalse(gomow_config.ENABLE_SOIL_TEMPERATURE_LIMITER)
+        self.assertIsNone(gomow_config.SOIL_MOISTURE_ENTITY)
+        self.assertIsNone(gomow_config.SOIL_TEMPERATURE_ENTITY)
+        self.assertIsNone(gomow_config.SOIL_EC_ENTITY)
+
 
 if __name__ == "__main__":
     unittest.main()
