@@ -138,7 +138,7 @@ Add a single command for the integration fixture suite when `tests/integration/`
 | Rain accumulation | Not implemented | L1 counter/window reset and duplicate-event tests; L3 wet-to-dry replay fixture. |
 | `ground_dry` | Not implemented | Hysteresis/dwell boundaries and stale-input contract. |
 | Growth | Not implemented | Response-curve and global-limiter tests. |
-| Dispatcher/job tracking | Not implemented | Pending-job lifecycle and HA-restart recovery matrix before any live assisted command. |
+| Pending-job verification | Pure target-relative verifier: successful selected-zone completion without map completion; non-docked, interrupted, missing-zone, and sub-95% task-progress rejection. | Add persisted state-machine and recovery/reconciliation contract tests. |
 
 ## Exit criteria for a workboard item
 
