@@ -6,8 +6,8 @@ The system will decide **when it is suitable to mow**, **when mowing is due**, a
 
 The architecture separates three questions:
 
-1. **Is mowing safe and suitable now?**
-   Surface wetness, active rain, temperature, daylight/start window, data health, and mower readiness.
+1. **Is mowing operationally suitable now?**
+   Surface wetness, active rain, temperature, daylight/start window, data health, and mower readiness. These are GoMow's decision inputs; they supplement but never replace the mower's own protections.
 2. **Is mowing due?**
    A continuous global growth-potential model determines mowing demand and the derived target interval.
 3. **What job should be sent?**
@@ -24,8 +24,8 @@ These principles are binding for future work.
 - **Architecture before implementation.** Agree the design, implement in small stages, validate against real data, then proceed.
 - **Central configuration and named constants.** Installation-specific source entity IDs and intentionally tunable values live in the version-controlled `gomow_config` module. Deployable scripts explicitly import only what they use. Mathematical invariants and implementation-private constants remain local to the owning file; UI-adjustable operating values remain Home Assistant helpers, whose entity IDs are centrally configured.
 - **Measured over modelled.** Prefer direct, representative measurements where they exist. Models are fallbacks or interpolation layers, not a default substitute for a sensor.
-- **Conservative tie-breaks.** If uncertain, wait rather than start mowing.
-- **Separate measurement, model, decision, and dispatch.** Continuous scores feed simple booleans; automations consume booleans and an explicit job plan, never raw mechanics.
+- **Device-protection boundary.** GoMow is a higher-quality scheduling/decision layer. It only elects to request or not request a mow; it never changes, disables, or supersedes Navimow/NaviMower firmware, hardware, collision, lift, boundary, battery, weather, or other built-in protections.
+- **Decision-quality calibration.** Shadow/assisted observation is used to judge whether GoMow's recommendation matches sensible real-world mowing conditions and to verify HA command tracking—not to recertify the mower's existing safety systems.
 - **Fail closed.** `unknown`, `unavailable`, stale, invalid, or un-restored inputs must prevent an automatic start.
 - **Event-driven state changes; elapsed-time-aware maths.** Sensor changes initiate calculation, while rate/accumulation calculations integrate actual elapsed time and protect against outages or clock jumps.
 - **Diagnostics are first-class.** Calculated entities expose sub-scores, source freshness, thresholds, timestamps, model version, and decision reasons.
@@ -85,7 +85,7 @@ The only component permitted to issue a `navimower.mow` command is the mower dis
 
 NaviMower is the integration used to control and observe the Segway Navimow mower. It exposes mower controls, explicit zone mowing, task/map progress, map and per-zone coverage, mower activity, persistent route/session history, and optional per-zone completion timestamp entities.[NaviMower](references.md#navimower)
 
-NaviMower uses an undocumented private-cloud protocol alongside official Smart Home OAuth/MQTT data and describes itself as experimental. Its commands and state handling therefore require a fail-closed health gate, explicit command acknowledgement, and validation in a safe shadow/assisted phase before unattended starts.[NaviMower](references.md#navimower)
+NaviMower uses an undocumented private-cloud protocol alongside official Smart Home OAuth/MQTT data and describes itself as experimental. GoMow therefore keeps a fail-closed data/command-integrity gate and records acknowledgements so its scheduling decision and job history remain trustworthy. This does not replace or weaken any mower-native protection; NaviMower/Navimow retains responsibility for device-level safeguards.[NaviMower](references.md#navimower)
 
 ### 4.2 Phase-1 all-zone policy
 
@@ -560,7 +560,7 @@ mow_due AND mowing_allowed_now
 
 ### 10.2 Shadow and assisted operation
 
-Before unattended starts, use two validation modes:
+Use either mode when it provides useful evidence about GoMow's recommendation quality or Home Assistant command tracking:
 
 ```text
 Shadow mode:
@@ -569,11 +569,11 @@ Shadow mode:
 
 Assisted mode:
   present the proposed job and its reasons;
-  require a deliberate manual confirmation to start;
+  require a deliberate manual confirmation for that job;
   verify the job automatically afterwards.
 ```
 
-Only enable unattended automatic starts after normal, interrupted, cancelled, and partial-job scenarios have been observed and correctly classified.
+Neither mode retests or replaces Navimow's built-in protection systems. Automatic operation is a user-controlled policy choice once GoMow's recommendations and command lifecycle are behaving as intended; it is not unlocked by an arbitrary checklist.
 
 ### 10.3 Later selected-zone scheduling
 

@@ -1,8 +1,8 @@
 # GoMow
 
-GoMow is a conservative, Home Assistant-based decision system for a Segway Navimow i210 LiDAR Pro. It determines whether mowing is suitable now, whether mowing is due, and—initially—dispatches an all-enabled-zone job only after verifiable completion and safety conditions are satisfied.
+GoMow is a Home Assistant-based decision system for a Segway Navimow i210 LiDAR Pro. It determines whether mowing is operationally suitable now, whether mowing is due, and—initially—dispatches an all-enabled-zone job only when its decision and command-integrity conditions are satisfied.
 
-> **Safety boundary:** GoMow must remain in shadow mode, then assisted mode, until the documented validation criteria are met. Nothing in this repository authorises an unattended start by itself.
+> **Control boundary:** GoMow only decides whether to request a mow, much like a richer calendar schedule. It does not modify, replace, or bypass Navimow/NaviMower firmware, hardware, rain, collision, lift, boundary, battery, or other built-in protections. Shadow and assisted modes are decision-quality and integration checks; unattended operation remains an explicit user-controlled setting, not something enabled by a repository change.
 
 ## Status
 

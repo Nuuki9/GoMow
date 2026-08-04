@@ -3,8 +3,8 @@
 ## Safety
 
 - This repository controls a real mower. Default to no action; fail closed on missing, stale, invalid, or ambiguous data.
-- Do not enable unattended automatic starts, deploy live changes, alter a real mower schedule, or call a mower-control service unless the user explicitly requests that exact action.
-- Preserve a shadow-mode then assisted-mode rollout. Do not skip completion verification.
+- Do not deploy live changes, alter a real mower schedule, or call a mower-control service unless the user explicitly requests that exact action. GoMow must never attempt to override or disable a built-in mower/integration protection.
+- Use shadow or assisted operation when it is useful to validate decision quality or command tracking; do not impose process overhead unrelated to the change being made.
 - Do not put secrets, tokens, `.storage` content, or personal data in Git.
 
 ## Architecture

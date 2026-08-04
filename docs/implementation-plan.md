@@ -6,8 +6,8 @@
 
 - Establish the central `gomow_config` module before importing any deployable PyScript. It owns installation-specific entity IDs and intentionally tunable values; scripts import only their required constants. A change to it or any shared module requires a full GoMow PyScript reload and diagnostic verification.
 - Establish helpers, `mower_inputs_healthy`, manual hold, audit log, pending-job persistence, and dispatcher state machine.
-- Enable NaviMower per-zone coverage and completion entities needed for verification.
-- Run no automatic starts.
+- Enable NaviMower per-zone coverage and completion entities needed for useful status/command tracking.
+- Keep current mower scheduling unchanged while developing or deploying this stage.
 
 ### Stage 1 — Complete and validate wetness model
 
@@ -33,11 +33,11 @@
 - Add soil-root-temperature response once validated.
 - Compare derived intervals against visible grass growth and completed mowing outcomes.
 
-### Stage 4 — Assisted then unattended all-zone operation
+### Stage 4 — Decision-quality validation then automatic all-zone operation
 
-- Validate successful completion, rain interruption, manual stop, failed start, and 95–99% practical-completion cases.
-- Use assisted mode first.
-- Enable automatic all-zone starts only after tracking is reliable.
+- Observe proposed jobs across representative normal, wet/rain-interrupted, manual-stop, and failed-start situations as practical; use the evidence to improve recommendations and command tracking.
+- Use assisted mode where a live confirmation is useful, not as a ritual prerequisite for every feature.
+- When the decision quality is satisfactory, command lifecycle tracking is behaving correctly, and the user explicitly enables it, allow automatic all-zone starts. Built-in mower protections remain independently active.
 
 ### Deferred Phase 2
 
@@ -50,4 +50,4 @@
 
 ---
 
-This plan does not authorise unattended mower starts. The mandatory progression is **shadow mode → assisted mode → explicitly approved unattended operation**.
+This plan does not itself change a live schedule or enable automatic starts. GoMow's rollout is **shadow → assisted when useful → explicitly user-enabled automatic operation**; its purpose is sensible mowing decisions and reliable command tracking, while built-in mower protections remain independent.

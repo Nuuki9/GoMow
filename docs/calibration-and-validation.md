@@ -1,6 +1,6 @@
 # Calibration and Validation Log
 
-This is the evidence record for threshold tuning and for advancing from shadow mode to assisted and unattended operation. Do not replace observations with assumed values.
+This is the evidence record for tuning whether GoMow recommends mowing sensibly in real lawn conditions, and for checking that its Home Assistant command tracking reflects what happened. It does not certify or replace the mower's built-in protections. Do not replace observations with assumed values.
 
 ## Calibration principles
 
@@ -9,19 +9,19 @@ This is the evidence record for threshold tuning and for advancing from shadow m
 - Tune wetness thresholds only after observing complete wet-to-dry cycles.
 - Record the prior value, proposed value, reason, evidence, date, and decision ID for every change.
 
-## Required validation scenarios
+## Useful decision-quality and tracking scenarios
 
-| Scenario | Required result before unattended operation |
+| Scenario | Decision-quality / tracking evidence |
 |---|---|
-| Dry all-zone mow | Pending job starts, all requested zones complete, and canonical full-mow timestamp updates once. |
-| Rain before start | Active-rain or ground-wet gate blocks dispatch. |
-| Rain during job | Existing reactive handling docks/pauses mower; job is classified interrupted, not complete. |
-| Manual stop | Job remains incomplete and is auditable. |
-| Failed start | Dispatcher times out/reports failure without duplicate commands. |
-| Restart during job | Pending state restores; no duplicate start; completion is resolved from fresh evidence. |
-| Near-complete zone | Integration's accepted completion behaviour is observed and documented. |
-| Dew/dry-down cycle | `ground_dry` transition is compared with actual grass-surface condition. |
-| WH52 rain/dry cycle | Moisture and soil temperature trends are compared with known conditions before inclusion in scheduling. |
+| Dry all-zone mow | GoMow recommends mowing when the lawn looks suitable; where dispatched, the requested zones and canonical full-mow timestamp are tracked correctly. |
+| Rain before start | GoMow recommends waiting while active rain or its wetness model indicates unsuitable conditions. |
+| Rain during job | Existing reactive NaviMower/HA handling remains in control; GoMow classifies the job interrupted rather than complete. |
+| Manual stop | GoMow records the incomplete job accurately and does not claim a full mow. |
+| Failed start | GoMow reports failure without duplicate commands. |
+| Restart during job | Pending state restores and resolves from fresh evidence without duplicate starts. |
+| Near-complete zone | The integration's accepted completion behaviour is understood and documented. |
+| Dew/dry-down cycle | `ground_dry` recommendation is compared with visible grass-surface condition. |
+| WH52 rain/dry cycle | Moisture and soil-temperature trends are compared with known conditions before inclusion in scheduling. |
 
 ## Change log
 
