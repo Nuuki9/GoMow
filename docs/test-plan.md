@@ -50,6 +50,8 @@ Load deployable PyScript with minimal `state`, `log`, decorators, time, and serv
 - a later valid sample creates a new baseline rather than applying decay across an unknown interval;
 - feature switches, manual holds, and uncalibrated thresholds fail predictably;
 - no wetness/growth/decision module can call a mower-control service;
+- public boolean contracts expose a stable explanation reference, primary reason code, ordered blocking reason codes, and evaluated gate states; and
+- the canonical decision trace includes input values/units/freshness/validity, active thresholds or policy values, model/config versions, and a timestamped factor snapshot sufficient to reproduce the recommendation from recorded inputs; and
 - startup/reload enters recovery and has no automatic-dispatch path until its explicit recovery conditions are met.
 
 ### L3 — Decision-pipeline integration tests
@@ -139,6 +141,7 @@ Add a single command for the integration fixture suite when `tests/integration/`
 | `ground_dry` | Not implemented | Hysteresis/dwell boundaries and stale-input contract. |
 | Growth | Not implemented | Response-curve and global-limiter tests. |
 | Pending-job verification | Pure target-relative verifier: successful selected-zone completion without map completion; non-docked, interrupted, missing-zone, and sub-95% task-progress rejection; restored `START_REQUESTED` never retries. | Add persisted state-machine and remaining recovery/reconciliation contract tests. |
+| Decision trace | Canonical pure trace builder preserves all simultaneous reason codes, applies deterministic primary-reason precedence, and retains factor/gate snapshots. | Add PyScript public-entity contract and multi-module replay coverage when final decision evaluation is introduced. |
 
 ## Exit criteria for a workboard item
 

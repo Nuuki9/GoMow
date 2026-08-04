@@ -4,6 +4,9 @@ All notable project decisions and implementation changes are recorded here.
 
 ## Unreleased
 
+- Add DEC-041 and the canonical `binary_sensor.mow_recommended` / `sensor.gomow_decision_trace` explainability contract: retain all concurrent blocks, expose stable reason codes, gates, factor snapshots, versions, and evaluation time.
+- Add a pure, deterministic decision-trace builder and test that stale input remains the primary reason without hiding simultaneous wetness failure.
+
 ### Added
 
 - Initial repository documentation baseline.

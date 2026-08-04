@@ -40,6 +40,11 @@ GROUND_WETNESS_BACKING_ENTITY = "pyscript.ground_wetness_score_backing"
 GROUND_WETNESS_SCORE_ENTITY = "sensor.ground_wetness_score"
 GROUND_WETNESS_SEED_SERVICE = "pyscript.seed_ground_wetness_score"
 
+# Final public decision contract. The boolean remains intentionally simple for
+# consumers; the paired trace exposes the full explainability envelope.
+MOW_RECOMMENDED_ENTITY = "binary_sensor.mow_recommended"
+DECISION_TRACE_ENTITY = "sensor.gomow_decision_trace"
+
 # Optional soil-sensor capability entities. Set a discovered, validated entity
 # ID before enabling its matching limiter. None means the capability is absent,
 # not an unhealthy required input. WH51 supplies moisture only; WH52 may supply

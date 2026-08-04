@@ -49,6 +49,10 @@ class CentralConfigurationContractTests(unittest.TestCase):
         self.assertIsNone(gomow_config.SOIL_TEMPERATURE_ENTITY)
         self.assertIsNone(gomow_config.SOIL_EC_ENTITY)
 
+    def test_final_boolean_and_decision_trace_have_central_public_contracts(self):
+        self.assertEqual(gomow_config.MOW_RECOMMENDED_ENTITY, "binary_sensor.mow_recommended")
+        self.assertEqual(gomow_config.DECISION_TRACE_ENTITY, "sensor.gomow_decision_trace")
+
 
 if __name__ == "__main__":
     unittest.main()

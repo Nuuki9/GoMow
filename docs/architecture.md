@@ -73,9 +73,41 @@ Downstream mower-control automation must consume only these contracts:
 | `sensor.growth_potential_score` | Diagnostic continuous estimate of current mowing demand potential. |
 | `sensor.derived_mowing_interval` | Diagnostic target interval derived from growth potential. |
 | `binary_sensor.mow_due` | A mowing job is due under the active scheduling policy. |
+| `binary_sensor.mow_recommended` | **The final simple boolean**: GoMow recommends starting the proposed job now. It is false for every block, hold, recovery, or not-due result. |
+| `sensor.gomow_decision_trace` | Canonical self-documenting explanation for the current final decision. |
 | `sensor.planned_mow_zone_list` | The immutable target-zone list for the next proposed job. |
 
 The only component permitted to issue a `navimower.mow` command is the mower dispatcher.
+
+### 3.1 Explainability contract
+
+The final decision remains intentionally simple for downstream automation:
+
+```text
+binary_sensor.mow_recommended = true | false
+```
+
+A false value is not a diagnosis. Every decision evaluation therefore also publishes `sensor.gomow_decision_trace`. It has a stable, machine-readable schema rather than relying on free-text logs:
+
+```text
+state: RECOMMEND | NOT_DUE | BLOCKED | NOT_READY | HELD | RECOVERY_UNCONFIRMED
+attributes:
+  recommendation: true | false
+  primary_reason_code: e.g. WET_SURFACE
+  blocking_reason_codes: ordered list of every failed gate
+  gates: {inputs_healthy, ground_dry, conditions_allowed, mow_due,
+          manual_hold_clear, recovery_confirmed, dispatcher_ready}
+  factors: per input/derived factor {entity_id, value, unit, valid,
+            age_seconds, observed_at, threshold_or_policy_value}
+  proposed_job: {map_identity, target_zone_ids} when known
+  model_version, configuration_revision, evaluated_at, trace_schema_version
+```
+
+Reason codes are a documented finite vocabulary (for example `INPUT_STALE`, `WET_SURFACE`, `ACTIVE_RAIN`, `FROST`, `NOT_DUE`, `MANUAL_HOLD`, `RECOVERY_UNCONFIRMED`). They are ordered by a documented precedence for `primary_reason_code`, but `blocking_reason_codes` always retains all simultaneous causes. This prevents a convenient first failure from hiding a mis-calibrated wetness model, stale weather input, or another relevant gate.
+
+Every derived boolean exposes at least `primary_reason_code`, `blocking_reason_codes`, evaluated gate states, `trace_entity`, model version, and evaluation timestamp. Continuous derived entities expose their formula inputs, component values, thresholds, validity/freshness, and model version. The full factor snapshot belongs in the single canonical trace to avoid inconsistent copies and HA attribute-size problems.
+
+The trace is an explanation of GoMow's recommendation quality; it does not represent or alter Navimow's device-level protection decisions.
 
 ---
 
