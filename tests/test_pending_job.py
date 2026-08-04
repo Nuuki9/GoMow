@@ -134,6 +134,19 @@ class PendingJobCompletionTests(unittest.TestCase):
         self.assertFalse(recovery.dispatch_allowed)
         self.assertEqual(recovery.reason, "start_unconfirmed_no_retry")
 
+    def test_recovery_resumes_monitoring_confirmed_active_mower(self):
+        job = PendingMowJob("gomow-test-active-recovery", STARTED, "2", (6, 7))
+
+        recovery = pending_job.reconcile_recovery(
+            job,
+            prior_state="MOWING",
+            mower_state="mowing",
+        )
+
+        self.assertEqual(recovery.state, "MOWING")
+        self.assertFalse(recovery.dispatch_allowed)
+        self.assertEqual(recovery.reason, "active_mower_confirmed")
+
 
 if __name__ == "__main__":
     unittest.main()

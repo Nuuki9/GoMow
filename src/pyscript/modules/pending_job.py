@@ -48,11 +48,13 @@ def reconcile_recovery(
     mower_state: str,
 ) -> RecoveryDecision:
     """Reconcile restored state without retrying a previously requested start."""
-    del job, mower_state
+    del job
     if prior_state == "START_REQUESTED":
         return RecoveryDecision(
             "RECOVERY_UNCONFIRMED", False, "start_unconfirmed_no_retry"
         )
+    if prior_state == "MOWING" and mower_state == "mowing":
+        return RecoveryDecision("MOWING", False, "active_mower_confirmed")
     return RecoveryDecision("RECOVERY_UNCONFIRMED", False, "recovery_not_implemented")
 
 
