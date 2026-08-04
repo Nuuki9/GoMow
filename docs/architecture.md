@@ -109,6 +109,21 @@ Every derived boolean exposes at least `primary_reason_code`, `blocking_reason_c
 
 The trace is an explanation of GoMow's recommendation quality; it does not represent or alter Navimow's device-level protection decisions.
 
+### 3.2 Noise-controlled HA audit and logging
+
+The trace is updated on every evaluation; Home Assistant logs and Logbook are **not**. GoMow emits a compact structured audit event only for a meaningful transition:
+
+- final recommendation changes (`false → true` or `true → false`);
+- final decision state or primary reason changes (for example `WET_SURFACE → INPUT_STALE`);
+- input-health loss/recovery, manual-hold change, recovery reconciliation, or pending-job lifecycle transition; or
+- command request/acknowledgement, terminal verification, interruption, cancellation, timeout, or unexpected runtime failure.
+
+No event is emitted for an unchanged periodic recalculation, a score movement that leaves the decision/reason unchanged, or a secondary blocking-reason-only change. The canonical trace still records those details for inspection.
+
+Each notable event produces one concise `pyscript.gomow` HA system-log entry and one `logbook.log` entry (the live HA instance exposes this service). The message contains an event code, decision state, primary reason, trace timestamp, and `job_id` where applicable; the full factor snapshot remains in `sensor.gomow_decision_trace`, not in the log line. This keeps the HA Logbook useful without duplicating an hourly stream of model values.
+
+Use levels consistently: **INFO** for normal recommendation/job/recovery transitions, **WARNING** for a newly unhealthy input, hold, unconfirmed recovery, rejected start, or abnormal terminal outcome, and **ERROR** only for unexpected runtime exceptions. Logging is observational only—failure to emit an audit entry must never make a false decision true or permit dispatch.
+
 ---
 
 ## 4. Mower Control and Job Tracking — NaviMower

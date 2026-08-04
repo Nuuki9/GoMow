@@ -51,7 +51,8 @@ Load deployable PyScript with minimal `state`, `log`, decorators, time, and serv
 - feature switches, manual holds, and uncalibrated thresholds fail predictably;
 - no wetness/growth/decision module can call a mower-control service;
 - public boolean contracts expose a stable explanation reference, primary reason code, ordered blocking reason codes, and evaluated gate states; and
-- the canonical decision trace includes input values/units/freshness/validity, active thresholds or policy values, model/config versions, and a timestamped factor snapshot sufficient to reproduce the recommendation from recorded inputs; and
+- the canonical decision trace includes input values/units/freshness/validity, active thresholds or policy values, model/config versions, and a timestamped factor snapshot sufficient to reproduce the recommendation from recorded inputs;
+- audit-event selection emits once for a recommendation/state/primary-reason or lifecycle transition but remains silent for an unchanged evaluation; and
 - startup/reload enters recovery and has no automatic-dispatch path until its explicit recovery conditions are met.
 
 ### L3 — Decision-pipeline integration tests
