@@ -22,7 +22,7 @@ This is intentionally not a literal simulation of grass growth or surface physic
 These principles are binding for future work.
 
 - **Architecture before implementation.** Agree the design, implement in small stages, validate against real data, then proceed.
-- **Named constants.** All source entity IDs, thresholds, time limits, and tunables live in named constants at the top of the relevant file.
+- **Central configuration and named constants.** Installation-specific source entity IDs and intentionally tunable values live in the version-controlled `gomow_config` module. Deployable scripts explicitly import only what they use. Mathematical invariants and implementation-private constants remain local to the owning file; UI-adjustable operating values remain Home Assistant helpers, whose entity IDs are centrally configured.
 - **Measured over modelled.** Prefer direct, representative measurements where they exist. Models are fallbacks or interpolation layers, not a default substitute for a sensor.
 - **Conservative tie-breaks.** If uncertain, wait rather than start mowing.
 - **Separate measurement, model, decision, and dispatch.** Continuous scores feed simple booleans; automations consume booleans and an explicit job plan, never raw mechanics.

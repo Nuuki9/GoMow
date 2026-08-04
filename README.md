@@ -6,7 +6,7 @@ GoMow is a conservative, Home Assistant-based decision system for a Segway Navim
 
 ## Status
 
-Architecture agreed. Existing wetness-model PyScript work has not yet been imported or modified in this repository.
+Architecture agreed. The three supplied wetness-model scripts have been reviewed and imported as a **repository-only, shadow-mode baseline**; nothing has been copied into Home Assistant or enabled for mowing control.
 
 ## Documentation
 
@@ -15,15 +15,17 @@ Architecture agreed. Existing wetness-model PyScript work has not yet been impor
 - [Implementation plan](docs/implementation-plan.md) — staged build and safe rollout process.
 - [Integration observations](docs/integration-observations.md) — real NaviMower, Ecowitt, and HA entity evidence.
 - [Calibration and validation](docs/calibration-and-validation.md) — observed data, threshold tuning, and test results.
+- [Initial PyScript review](docs/pyscript-review.md) — review findings, imported baseline, and explicit remaining gaps.
 - [Open questions](docs/open-questions.md) — evidence required before later stages are enabled.
 - [References](docs/references.md) — cited scientific, product, integration, and HA sources.
 
 ## Intended layout
 
 ```text
-src/pyscript/    # reviewed deployable PyScript files; not populated yet
-tests/           # deterministic scenarios and fixtures; not populated yet
-deploy/          # explicit deployment/verification tooling; not populated yet
+src/pyscript/            # reviewed deployable PyScript files
+src/pyscript/modules/    # shared `gomow_config` and pure testable helpers
+tests/                   # deterministic scenarios and fixtures
+deploy/                  # explicit deployment/verification tooling; not populated yet
 ```
 
 ## Working rules

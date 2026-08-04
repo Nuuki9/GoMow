@@ -10,7 +10,7 @@
 ## Architecture
 
 - Implement decision logic in PyScript; retain existing integrations for device protocol access.
-- Keep source entity IDs and tunable values as named constants at the top of each deployable file.
+- Keep installation-specific entity IDs and intentionally tunable values as named constants in `src/pyscript/modules/gomow_config.py`. Deployable scripts explicitly import only the constants they use. Keep mathematical invariants and implementation-private constants local to the owning file; keep day-to-day operator values in Home Assistant UI helpers, whose entity IDs are centrally configured.
 - Keep measurement, continuous models, booleans, and dispatch separate. Downstream consumers use public boolean contracts, not raw scores.
 - Maintain a fail-closed input-health gate and diagnostic attributes.
 - Preserve the one dispatcher / explicit pending-job state-machine model.
@@ -20,5 +20,6 @@
 - Read `docs/architecture.md`, `docs/decisions.md`, and the relevant validation evidence before changing implementation.
 - Update the decision register when an agreed architectural assumption changes.
 - Update calibration/validation records after real-world observations change a threshold.
+- When `gomow_config` or a shared module changes, reload the complete GoMow PyScript set and verify the public diagnostics before any later live use.
 - Use scenario-based validation before live deployment.
 - Inspect Git status and diffs before committing; never claim a push or deployment succeeded without verifying it.

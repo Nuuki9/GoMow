@@ -38,5 +38,6 @@
 | DEC-032 | Leaf wetness | No leaf-wetness hardware in Phase 1; retain it as an optional accuracy upgrade. | Active | Modelled dew causes repeated wrong or over-conservative decisions. |
 | DEC-033 | Cut height | Defer height automation until NaviMower provides safe verified write control. | Deferred | Writable control becomes available and validated. |
 | DEC-034 | Deployment | Shadow mode then assisted mode are mandatory before unattended starts. | Active | Never waived; only completion criteria determine transition. |
+| DEC-035 | Configuration | Installation-specific entity IDs and intentionally tunable values live in one explicit `gomow_config` PyScript module. Scripts import only their required constants; implementation-private mathematical constants remain local. | Active | Pyscript module semantics or the project’s configuration boundary changes. |
 
 ---
