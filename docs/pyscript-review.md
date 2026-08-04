@@ -2,9 +2,7 @@
 
 **Status:** repository-only baseline; not copied to Home Assistant; no mowing action is enabled.
 
-## Scope reviewed
-
-The following user-supplied Stage 1–3 files were reviewed and imported:
+The local HA `/config/pyscript/` scripts are pre-existing legacy files, not a deployment of this repository revision. Read-only inspection found the older `15.0 mm` ceiling and an implicit cross-file global dependency in the dew script; they must not be treated as the reviewed baseline or edited in place. A deliberate backup-and-replace deployment will be required later.
 
 - `reference_et.py`
 - `ground_wetness_score.py`

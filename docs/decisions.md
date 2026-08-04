@@ -40,5 +40,6 @@
 | DEC-034 | Rollout | Use shadow/assisted operation pragmatically to tune decision quality and verify command tracking. Automatic starts are an explicit user-controlled policy setting; repository changes never enable them by themselves. | Active | The scheduling/control boundary changes. |
 | DEC-035 | Configuration | Installation-specific entity IDs and intentionally tunable values live in one explicit `gomow_config` PyScript module. Scripts import only their required constants; implementation-private mathematical constants remain local. | Active | Pyscript module semantics or the project’s configuration boundary changes. |
 | DEC-036 | Protection boundary | GoMow supplements calendar scheduling only. It must not alter, bypass, or claim to replace Navimow/NaviMower built-in safeguards; calibration measures recommendation quality, not mower safety certification. | Active | A future integration exposes an explicit, user-approved safety-control interface. |
+| DEC-037 | Verification | Use layered deterministic verification: unit tests, PyScript runtime contracts, timestamped multi-module replay fixtures, deployment checks, then live decision-quality observation. New behaviour and bug fixes are test-first. | Active | A materially different implementation platform or test harness is adopted. |
 
 ---

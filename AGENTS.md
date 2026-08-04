@@ -21,5 +21,5 @@
 - Update the decision register when an agreed architectural assumption changes.
 - Update calibration/validation records after real-world observations change a threshold.
 - When `gomow_config` or a shared module changes, reload the complete GoMow PyScript set and verify the public diagnostics before any later live use.
-- Use scenario-based validation before live deployment.
+- Follow the layered verification plan in `docs/test-plan.md`. New production behaviour and defect fixes use RED → GREEN → REFACTOR; run targeted and full deterministic tests before commit.
 - Inspect Git status and diffs before committing; never claim a push or deployment succeeded without verifying it.

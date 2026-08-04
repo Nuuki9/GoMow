@@ -13,3 +13,4 @@ All notable project decisions and implementation changes are recorded here.
 - Central `gomow_config` module, shared wetness modules, and deterministic unit/runtime-contract tests.
 - ET validity/freshness safeguards, hourly recalculation, twilight radiation correction, and explicit unattributed restored wetness following independent review.
 - Clarified GoMow as a decision-quality scheduling layer that leaves built-in mower protections untouched; calibration now measures recommendation quality and command tracking.
+- Added a layered verification/test plan (DEC-037): deterministic unit, PyScript-contract, integration replay, deployment, and live decision-quality checks.
