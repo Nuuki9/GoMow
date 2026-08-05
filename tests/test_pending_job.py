@@ -147,6 +147,14 @@ class PendingJobCompletionTests(unittest.TestCase):
         self.assertFalse(recovery.dispatch_allowed)
         self.assertEqual(recovery.reason, "active_mower_confirmed")
 
+    def test_pending_job_round_trips_as_an_immutable_persisted_record(self):
+        job = PendingMowJob("gomow-test-persist", STARTED, "2", (6, 7))
+
+        restored = PendingMowJob.from_record(job.to_record())
+
+        self.assertEqual(restored, job)
+        self.assertEqual(restored.target_zone_ids, (6, 7))
+
 
 if __name__ == "__main__":
     unittest.main()

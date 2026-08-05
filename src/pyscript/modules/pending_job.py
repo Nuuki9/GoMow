@@ -22,6 +22,28 @@ class PendingMowJob:
     map_identity: str
     target_zone_ids: tuple[int, ...]
 
+    def to_record(self) -> dict[str, object]:
+        """Return a JSON-safe record for the persisted pending-job store."""
+        return {
+            "job_id": self.job_id,
+            "accepted_start_at": self.accepted_start_at.isoformat(),
+            "map_identity": self.map_identity,
+            "target_zone_ids": list(self.target_zone_ids),
+        }
+
+    @classmethod
+    def from_record(cls, record: Mapping[str, object]) -> "PendingMowJob":
+        """Restore an immutable job; malformed records must raise, never guess."""
+        target_zone_ids = record["target_zone_ids"]
+        if not isinstance(target_zone_ids, list):
+            raise ValueError("target_zone_ids must be a list")
+        return cls(
+            job_id=str(record["job_id"]),
+            accepted_start_at=datetime.fromisoformat(str(record["accepted_start_at"])),
+            map_identity=str(record["map_identity"]),
+            target_zone_ids=tuple(int(zone_id) for zone_id in target_zone_ids),
+        )
+
 
 @dataclass(frozen=True)
 class CompletionVerification:
