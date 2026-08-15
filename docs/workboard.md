@@ -12,7 +12,7 @@ Use only these states: **Not started**, **In progress**, **Blocked**, **Done**, 
 
 | Workstream | Status | Completion / next evidence |
 |---|---|---|
-| Architecture and decision register | Done | DEC-001–042 recorded; device-protection, decision-quality, verification, HA-recovery, tuning, capability-configuration, explainability, and audit-noise boundaries clarified. |
+| Architecture and decision register | Done | DEC-001–044 recorded; device-protection, decision-quality, verification, HA-recovery, tuning, capability-configuration, explainability, audit-noise, active-job resume, and interrupted-job frequency boundaries clarified. |
 | Central PyScript configuration | Done in repository | `modules/gomow_config.py` and contract tests exist; core mandatory, optional/unbound, and feature-enabled soil capabilities are explicit. Live entity mapping remains pending. |
 | Initial ET / wetness / dew baseline | Done in repository | Reviewed scripts and 15 deterministic tests; no HA deployment. |
 | Verification plan | Done | Layered test plan defined in `test-plan.md`; future behaviour changes are test-first. |

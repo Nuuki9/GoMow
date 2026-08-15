@@ -174,7 +174,7 @@ interrupted_zone_ids
 failure_reason
 ```
 
-The target-zone list must not change after dispatch. Integration-provided `cycle_id`/session identifiers may be retained as diagnostics, but are never the GoMow job ID or sole join key: a single native two-zone task observed on 2026-08-04 produced multiple/rewritten integration session IDs.
+The target-zone list and the `planned_interval_days` snapshot used for the next-due calculation must not change after dispatch. Integration-provided `cycle_id`/session identifiers may be retained as diagnostics, but are never the GoMow job ID or sole join key: a single native two-zone task observed on 2026-08-04 produced multiple/rewritten integration session IDs.
 
 ### 4.5 Successful completion rule
 
@@ -191,6 +191,18 @@ For a Phase-1 full-map job, update `input_datetime.last_successful_full_mow` onl
 
 NaviMower treats vendor-ended cycles at 95% or above as practically completed. The system will use the integration's verified per-zone completion semantics, not impose a separate arbitrary 100% rule.[NaviMower](references.md#navimower)
 
+### 4.5.1 Completion time versus next-mow timing
+
+`last_successful_full_mow` remains the evidence/audit timestamp and is written only at verified completion. It is **not** by itself the next-mow frequency anchor. At job acceptance, persist `accepted_start_at` and `planned_interval_days`; after verified completion calculate:
+
+```text
+nominal_due_at = accepted_start_at + planned_interval_days
+next_eligible_at = max(nominal_due_at,
+                       verified_completed_at + MIN_POST_COMPLETION_REST)
+```
+
+This hybrid policy prevents a long weather interruption from resetting the entire mowing interval at late completion, while the completion-rest floor protects zones cut last from an immediate new all-zone job. While a job is pending—mowing, returning, gate-aborted, or resume-eligible—no second job may be planned. Per-zone frequency anchoring remains a deferred later policy.
+
 ### 4.6 Dispatcher state machine
 
 ```text
@@ -198,7 +210,8 @@ IDLE
   → ELIGIBLE
   → START_REQUESTED
   → MOWING
-  → RETURNING
+  → GATE_ABORT_REQUESTED → RETURNING
+  → RESUME_ELIGIBLE → RESUME_REQUESTED → MOWING
   → COMPLETION_VERIFYING
   → COMPLETED
   → COOLDOWN
@@ -218,7 +231,10 @@ Required dispatcher behaviours:
 - enter an explicit recovery state after start/reload and reconcile the persisted job with a fresh mower state before any further transition;
 - never reissue a start or advance a successful-completion timestamp solely because a state/job record was restored;
 - distinguish a deliberately docked/paused mower from a failed job;
-- write a concise audit event for every transition;
+- on a confirmed continuous operating-gate failure during a GoMow-owned job, request dock once and record `GATE_ABORTED` with its reason;
+- automatically call NaviMower Resume only for a GoMow-issued gate abort after fresh evidence confirms the retained task, all continuous gates and a resume-clear dwell pass, no manual/native/error ambiguity occurred, and a bounded resume attempt is permitted;
+- never use Resume as a fallback new-mow command, retry it repeatedly, or resume an app/native/manual job;
+- write a concise audit event for every transition; and
 - never infer completion from elapsed duration alone.
 
 ### 4.7 Home Assistant restart and reload recovery

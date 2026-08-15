@@ -80,7 +80,7 @@ Core scenarios:
 | Restart/reload while mowing/returning | The job monitor resumes observation only; its target-zone list and start identity remain immutable. |
 | Restart/reload after terminal state | Completion is verified only from evidence fresh relative to the persisted job, never from restored state alone. |
 | Persistence missing/corrupt | The affected model/job becomes `recovery_failed`/not-ready, preserves no invented history, and requires a manual resolution or new valid baseline. |
-| Pending-job lifecycle | Start acknowledgement, normal completion, interruption, cancellation, and timeout are classified without advancing the canonical full-mow timestamp incorrectly. |
+| Pending-job lifecycle | Start acknowledgement, normal completion, interruption, cancellation, timeout, one dock request on a continuous-gate failure, and one strictly eligible retained-task Resume are classified without advancing the canonical full-mow timestamp incorrectly. |
 
 ### L4 — Home Assistant deployment and live-contract checks
 
