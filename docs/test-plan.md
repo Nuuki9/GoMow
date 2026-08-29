@@ -48,7 +48,8 @@ Load deployable PyScript with minimal `state`, `log`, decorators, time, and serv
 - persistence restore produces the correct public diagnostic state;
 - invalid, unavailable, or stale source data pauses the affected model rather than emitting a misleading fresh result;
 - a later valid sample creates a new baseline rather than applying decay across an unknown interval;
-- feature switches, manual holds, and uncalibrated thresholds fail predictably;
+- feature switches, manual holds, uncalibrated thresholds, and each future persisted human intent fail predictably; and
+- unexpected external app/mower/native activity relinquishes GoMow command authority for an affected job, is explainable/auditable, and never permanently disables future automation merely by being observed;
 - no wetness/growth/decision module can call a mower-control service;
 - public boolean contracts expose a stable explanation reference, primary reason code, ordered blocking reason codes, and evaluated gate states; and
 - the canonical decision trace includes input values/units/freshness/validity, active thresholds or policy values, model/config versions, and a timestamped factor snapshot sufficient to reproduce the recommendation from recorded inputs;

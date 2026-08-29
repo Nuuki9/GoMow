@@ -269,6 +269,20 @@ input_button.mower_mark_job_complete        # assisted-phase fallback only
 
 A manual hold always overrides all automatic logic.
 
+### 4.9 Deferred human-intent interface
+
+GoMow must later provide a persisted, explainable **human-intent interface** rather than treating human operation as an error or permanently disabling automation after any app interaction. The eventual interface records provenance, creation time, expiry/clear rule, scope, effect, and a trace/audit reason code for each request. Its detailed UI, state schema, and command semantics remain deferred.
+
+Illustrative future intents to assess and implement individually are:
+
+- **Don't mow today** — a date-bounded scheduling hold; it should not silently bypass an already-running job's policy.
+- **Mow at next suitable opportunity** — makes a plan eligible without bypassing any current-condition, wetness, health, or native-mower protection.
+- **It's raining** — a conservative weather interlock that blocks starts and, for a GoMow-owned active job, enters the continuous gate-abort/dock path; it must not invent a measured rainfall amount.
+- **GoMow-mediated pause, dock, or resume** — requests that retain GoMow job ownership only where the lifecycle and fresh evidence make that safe.
+- **Record an observed manual mow as a full-lawn completion** — an assisted confirmation after terminal evidence, never automatic cadence credit for an ambiguous external job.
+
+External Navimow-app, mower-button, native-schedule, or other non-GoMow activity remains an ownership/reconciliation event. Until a later dedicated decision defines a safe adoption path, GoMow must observe it, expose the reason, and relinquish command authority for that job rather than assuming intent or issuing a conflicting command. A normal stable terminal reconciliation may return the system to automatic idle; it is not a permanent global kill switch.
+
 ---
 
 ## 5. Input Health Gate

@@ -8,6 +8,7 @@ This is the stable architecture-level sequence. Track executable work, current s
 
 - Establish the central `gomow_config` module before importing any deployable PyScript. It owns installation-specific entity IDs and intentionally tunable values; scripts import only their required constants. A change to it or any shared module requires a full GoMow PyScript reload and diagnostic verification.
 - Establish helpers, `mower_inputs_healthy`, manual hold, audit log, persisted pending-job state machine, and HA-restart recovery/reconciliation behaviour.
+- Reserve the human-intent interface as a later Stage-0/Stage-4 extension: implement one explicitly agreed scoped intent at a time, with persisted provenance/expiry, trace/audit evidence, and deterministic interaction with pending-job ownership. Do not treat external app/mower/native activity as an automatic GoMow command or a permanent disable.
 - Enable NaviMower per-zone coverage and completion entities needed for useful status/command tracking.
 - Keep current mower scheduling unchanged while developing or deploying this stage.
 
