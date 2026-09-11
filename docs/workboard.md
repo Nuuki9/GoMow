@@ -19,7 +19,7 @@ Use only these states: **Not started**, **In progress**, **Blocked**, **Done**, 
 | Tuning guide | Done | Evidence-led troubleshooting and calibration workflow defined in `tuning-guide.md`; parameter changes remain central, reversible, and test-backed. |
 | Live Home Assistant discovery | Done | HA Core is running; PyScript and NaviMower are installed. `/config/pyscript/` contains three pre-existing legacy wetness scripts but not the reviewed repository module layout. No files were changed. |
 | Stage 0 command lifecycle/tracking | In progress | Target-relative verifier and initial recovery branches are tested; implement persisted pending-job/audit/hold and HA runtime contracts without any dispatch call. |
-| Stage 1 measured rain and `ground_dry` | Not started | Netatmo rolling-hour source selection is evidenced; implement timestamp-deduplicated accumulation and calibrated boolean gate. |
+| Stage 1 measured rain and `ground_dry` | In progress | Timestamp-deduplicated measured-rain ingestion and an uncalibrated, conservative shadow contract are implemented; deploy and observe wet/dry cycles before setting thresholds. |
 | WH52 onboarding | Blocked | Hardware/gateway firmware and actual HA entities required. |
 | Growth model | Not started | Depends on validated temperature/soil-moisture inputs. |
 | Automatic dispatch | Not started | Explicitly user-enabled only after useful decision-quality and command-tracking evidence. |
@@ -32,8 +32,8 @@ Use only these states: **Not started**, **In progress**, **Blocked**, **Done**, 
 | D-02 | Record NaviMower entity IDs, state values, map/zone IDs, and completion semantics. | Done | Native Side `7` + Slope `6` run observed from start to dock: explicit task-zone list, 100% selected-task progress, two fresh per-zone completions, map completion unchanged, and unstable integration cycle IDs recorded. | D-01 |
 | D-03 | Record Netatmo rain entity IDs, units, timestamps, and update/deduplication semantics. | Done | `..._rain_last_hour` was observed changing after rain and returning to `0`; bind it as a rolling-hour measured source with timestamp/dedup/reset handling. Direct `..._rain` and `binary_sensor.is_it_raining` are stale and excluded. | D-01 |
 | I-01 | Implement Stage 0 input-health, manual hold, audit record, pending-job state model, and reboot reconciliation. | In progress | Unit-tested repository implementation: recovery blocks automatic dispatch until fresh inputs/job reconciliation; no dispatch service call. Target-relative terminal verification and initial recovery branches are implemented; persisted state, audit/hold, and HA contract remain. | D-02 |
-| I-02 | Implement measured rain accumulation. | Not started | Unit-tested, handles stale/duplicate samples and exposes diagnostics. | D-03 |
-| I-03 | Implement `binary_sensor.ground_dry` hysteresis and minimum dry duration. | Not started | Thresholds remain uncalibrated until observations are recorded; boolean contract is tested. | I-02 |
+| I-02 | Implement measured rain accumulation. | Done in repository | Pure and PyScript contract tests cover fresh positive rolling-hour input, zero-window expiry, invalid/stale samples, duplicate timestamps, persisted checkpoints, one-time saturation, and diagnostic attribution. Live deployment verification remains pending. | D-03 |
+| I-03 | Implement `binary_sensor.ground_dry` hysteresis and minimum dry duration. | In progress | A conservative uncalibrated shadow contract publishes `off` with `WETNESS_UNCALIBRATED`; implement/tune hysteresis and dwell only after wet/dry observations. | I-02 |
 
 ## Update protocol
 

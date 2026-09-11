@@ -63,14 +63,20 @@ class WetnessScriptContractTests(unittest.TestCase):
         builtins.state_trigger = passthrough_decorator
         builtins.service = passthrough_decorator
         sys.path.insert(0, str(MODULES))
-        for name in ("gomow_config", "wetness_math", "wetness_store", "ground_wetness_score", "dew_accumulation"):
+        for name in (
+            "gomow_config", "wetness_math", "wetness_store", "rain_accumulation",
+            "ground_wetness_score", "dew_accumulation", "rain_script", "ground_dry",
+        ):
             sys.modules.pop(name, None)
         self.config = load_module("gomow_config", MODULES / "gomow_config.py")
         load_module("wetness_math", MODULES / "wetness_math.py")
         load_module("wetness_store", MODULES / "wetness_store.py")
+        load_module("rain_accumulation", MODULES / "rain_accumulation.py")
         self.ground = load_module("ground_wetness_score", SCRIPTS / "ground_wetness_score.py")
         self.reference = load_module("reference_et", SCRIPTS / "reference_et.py")
         self.dew = load_module("dew_accumulation", SCRIPTS / "dew_accumulation.py")
+        self.rain = load_module("rain_script", SCRIPTS / "rain_accumulation.py")
+        self.ground_dry = load_module("ground_dry", SCRIPTS / "ground_dry.py")
 
     def tearDown(self):
         sys.path.remove(str(MODULES))
@@ -170,6 +176,62 @@ class WetnessScriptContractTests(unittest.TestCase):
             self.state.attributes[self.config.GROUND_WETNESS_SCORE_ENTITY]["dew_gate"],
             "feature_disabled",
         )
+
+    def test_fresh_rain_saturates_once_and_retains_source_diagnostics(self):
+        self.ground.restore_ground_wetness_score()
+        self.state.values[self.config.RAIN_LAST_HOUR_ENTITY] = 0.303
+        observed_at = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(minutes=1)
+        self.state.values[f"{self.config.RAIN_LAST_HOUR_ENTITY}.last_changed"] = observed_at
+
+        self.rain.ingest_rain_observation()
+
+        score_attributes = self.state.attributes[self.config.GROUND_WETNESS_SCORE_ENTITY]
+        checkpoint = self.state.values[self.config.RAIN_CHECKPOINT_ENTITY]
+        self.assertEqual(self.state.values[self.config.GROUND_WETNESS_SCORE_ENTITY], 1.5)
+        self.assertEqual(score_attributes["rain_score_mm"], 1.5)
+        self.assertEqual(score_attributes["last_update_reason"], "fresh_positive_rolling_hour_rain")
+        self.assertTrue(score_attributes["rain_source_healthy"])
+        self.assertEqual(score_attributes["rain_action"], "saturate")
+        self.assertEqual(score_attributes["rain_observation_mm"], 0.303)
+        self.assertEqual(score_attributes["rain_last_accepted_checkpoint"], checkpoint)
+
+        self.rain.ingest_rain_observation()
+
+        self.assertEqual(
+            self.state.attributes[self.config.GROUND_WETNESS_SCORE_ENTITY]["rain_source_reason"],
+            "rain_observation_duplicate",
+        )
+        self.assertEqual(self.state.values[self.config.GROUND_WETNESS_SCORE_ENTITY], 1.5)
+
+    def test_delayed_rain_event_is_rejected_without_saturating_wetness(self):
+        self.ground.restore_ground_wetness_score()
+        self.state.values[self.config.RAIN_LAST_HOUR_ENTITY] = 0.303
+        observed_at = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(minutes=16)
+        self.state.values[f"{self.config.RAIN_LAST_HOUR_ENTITY}.last_changed"] = observed_at
+
+        self.rain.ingest_rain_observation()
+
+        score_attributes = self.state.attributes[self.config.GROUND_WETNESS_SCORE_ENTITY]
+        self.assertEqual(self.state.values[self.config.GROUND_WETNESS_SCORE_ENTITY], 0.0)
+        self.assertEqual(score_attributes["rain_source_reason"], "rain_source_stale")
+        self.assertFalse(score_attributes["rain_source_healthy"])
+        self.assertIsNone(self.state.values.get(self.config.RAIN_CHECKPOINT_ENTITY))
+
+    def test_uncalibrated_ground_dry_is_off_with_explicit_shadow_diagnostics(self):
+        self.state.values[self.config.GROUND_WETNESS_SCORE_ENTITY] = 0.0
+        self.state.attributes[self.config.GROUND_WETNESS_SCORE_ENTITY] = {
+            "rain_source_healthy": True,
+            "model_version": self.config.GOMOW_MODEL_VERSION,
+        }
+
+        self.ground_dry.evaluate_ground_dry_shadow()
+
+        self.assertEqual(self.state.values[self.config.GROUND_DRY_ENTITY], "off")
+        attributes = self.state.attributes[self.config.GROUND_DRY_ENTITY]
+        self.assertEqual(attributes["primary_reason_code"], "WETNESS_UNCALIBRATED")
+        self.assertEqual(attributes["blocking_reason_codes"], ["WETNESS_UNCALIBRATED"])
+        self.assertFalse(attributes["calibrated"])
+        self.assertTrue(attributes["shadow_only"])
 
 
 if __name__ == "__main__":

@@ -139,8 +139,8 @@ Add a single command for the integration fixture suite when `tests/integration/`
 |---|---|---|
 | Central configuration | Contract tests for common entity IDs, wetness ceiling, uncalibrated hysteresis, ET cadence, and disabled/unbound optional soil capabilities | Add every new configured source/helper ID and feature-enabled health rule. |
 | ET/wetness/dew baseline | Pure math plus PyScript contracts: prior-rate integration, invalid ET fail-closed reset, twilight radiation, disabled dew, and restart attribution | Add measured rain sequence tests. |
-| Rain accumulation | Not implemented | L1 counter/window reset and duplicate-event tests; L3 wet-to-dry replay fixture. |
-| `ground_dry` | Not implemented | Hysteresis/dwell boundaries and stale-input contract. |
+| Rain accumulation | Pure rolling-hour window and PyScript contracts: fresh positive input saturates exactly once; zero expiry, invalid/stale samples, duplicate timestamp, persisted checkpoint, and source attribution are covered. | Add an L3 captured wet-to-dry replay fixture after shadow observations. |
+| `ground_dry` | Conservative shadow contract: state remains off with `WETNESS_UNCALIBRATED` while thresholds/dwell are unset. | Hysteresis/dwell boundaries, source-health contract, and replay coverage after empirical calibration. |
 | Growth | Not implemented | Response-curve and global-limiter tests. |
 | Pending-job verification | Pure target-relative verifier: successful selected-zone completion without map completion; non-docked, interrupted, missing-zone, and sub-95% task-progress rejection; restored `START_REQUESTED` never retries. | Add persisted state-machine and remaining recovery/reconciliation contract tests. |
 | Decision trace | Canonical pure trace builder preserves all simultaneous reason codes, applies deterministic primary-reason precedence, and retains factor/gate snapshots. | Add PyScript public-entity contract and multi-module replay coverage when final decision evaluation is introduced. |

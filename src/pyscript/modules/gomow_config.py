@@ -31,6 +31,11 @@ WIND_SPEED_ENTITY = "sensor.met_office_bagshot_wind_speed_3_hourly"
 SOLAR_RADIATION_ENTITY = "sensor.solar_radiation"
 PRESSURE_ENTITY = "sensor.netatmo_home_indoor_pressure"
 RAINING_ENTITY = "binary_sensor.is_it_raining"
+RAIN_LAST_HOUR_ENTITY = "sensor.netatmo_home_rain_sensor_rain_last_hour"
+# A persisted PyScript checkpoint prevents a rolling-hour value from being
+# reapplied across script reloads. It records the source state's virtual
+# `last_changed` timestamp, not a local receipt time.
+RAIN_CHECKPOINT_ENTITY = "pyscript.gomow_rain_observation_checkpoint"
 SUN_ENTITY = "sun.sun"
 HOME_LOCATION_ENTITY = "zone.home"
 
@@ -38,6 +43,7 @@ REFERENCE_ET_ENTITY = "sensor.reference_et_hourly"
 REFERENCE_ET_RECALCULATION_TRIGGER = "period(1h)"
 GROUND_WETNESS_BACKING_ENTITY = "pyscript.ground_wetness_score_backing"
 GROUND_WETNESS_SCORE_ENTITY = "sensor.ground_wetness_score"
+GROUND_DRY_ENTITY = "binary_sensor.ground_dry"
 GROUND_WETNESS_SEED_SERVICE = "pyscript.seed_ground_wetness_score"
 
 # Final public decision contract. The boolean remains intentionally simple for
@@ -68,6 +74,7 @@ DEFAULT_NIGHT_CLOUDINESS_RATIO = 0.7
 # ---------------------------------------------------------------------
 WETNESS_MAX_SCORE_MM = 1.5
 WETNESS_MAX_ELAPSED_HOURS = 6.0
+RAIN_MAXIMUM_AGE_MINUTES = 15
 
 # Deliberately unset until observed wet/dry cycles are recorded. Ground-dry
 # logic must refuse to enable while either threshold is None.
