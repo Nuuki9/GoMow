@@ -94,4 +94,6 @@ def seed_ground_wetness_score(value=None):
     except (TypeError, ValueError):
         log.warning("seed_ground_wetness_score: numeric value required")
         return
-    write_components(0.0, value, 0.0, "manual_seed")
+    # A manual baseline is deliberately unattributed: it must not masquerade as
+    # modelled dew or measured rain in later calibration analysis.
+    write_components(0.0, 0.0, value, "manual_seed")

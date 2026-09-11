@@ -177,6 +177,16 @@ class WetnessScriptContractTests(unittest.TestCase):
             "feature_disabled",
         )
 
+    def test_manual_seed_is_unattributed_not_modelled_dew_or_measured_rain(self):
+        self.ground.seed_ground_wetness_score(value=1.5)
+
+        attributes = self.state.attributes[self.config.GROUND_WETNESS_SCORE_ENTITY]
+        self.assertEqual(self.state.values[self.config.GROUND_WETNESS_SCORE_ENTITY], 1.5)
+        self.assertEqual(attributes["rain_score_mm"], 0.0)
+        self.assertEqual(attributes["dew_score_mm"], 0.0)
+        self.assertEqual(attributes["unattributed_score_mm"], 1.5)
+        self.assertEqual(attributes["last_update_reason"], "manual_seed")
+
     def test_fresh_rain_saturates_once_and_retains_source_diagnostics(self):
         self.ground.restore_ground_wetness_score()
         self.state.values[self.config.RAIN_LAST_HOUR_ENTITY] = 0.303
