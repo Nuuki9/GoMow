@@ -18,6 +18,8 @@ from wetness_store import components, parse_timestamp, safe_float, write_compone
 
 
 CHECKPOINT_TIMESTAMP_ORIGIN = "home_assistant_last_changed"
+# Persist during script parsing, before any startup handler can read it.
+state.persist(RAIN_CHECKPOINT_ENTITY, default_value=None)
 
 
 def _source_last_changed():
@@ -27,7 +29,11 @@ def _source_last_changed():
 
 
 def _checkpoint():
-    return parse_timestamp(state.get(RAIN_CHECKPOINT_ENTITY))
+    """Return no checkpoint before the first accepted source observation."""
+    try:
+        return parse_timestamp(state.get(RAIN_CHECKPOINT_ENTITY))
+    except NameError:
+        return None
 
 
 def _diagnostics(outcome, observation_mm, observed_at):
@@ -51,9 +57,11 @@ def restore_rain_observation_checkpoint():
     state.persist(RAIN_CHECKPOINT_ENTITY, default_value=None)
 
 
+@time_trigger("startup")
 @state_trigger(f"{RAIN_LAST_HOUR_ENTITY}")
 def ingest_rain_observation():
     """Accept one fresh rolling-window observation and publish its provenance."""
+    state.persist(RAIN_CHECKPOINT_ENTITY, default_value=None)
     observed_at = _source_last_changed()
     observation_mm = safe_float(RAIN_LAST_HOUR_ENTITY)
     if observed_at is None:

@@ -1,18 +1,21 @@
 """Pure policy for ingesting a non-monotonic rolling-hour rain source."""
 
-from dataclasses import dataclass
 from datetime import datetime, timedelta
 import math
 
 
-@dataclass(frozen=True)
 class RollingHourRainOutcome:
-    """One auditable response to a rolling-hour source observation."""
+    """One auditable response to a rolling-hour source observation.
 
-    action: str
-    reason: str
-    source_healthy: bool
-    next_checkpoint: datetime | None
+    Kept as a plain class because the deployed PyScript runtime deliberately
+    disallows importing ``dataclasses``.
+    """
+
+    def __init__(self, action, reason, source_healthy, next_checkpoint):
+        self.action = action
+        self.reason = reason
+        self.source_healthy = source_healthy
+        self.next_checkpoint = next_checkpoint
 
 
 def ingest_rolling_hour_observation(
