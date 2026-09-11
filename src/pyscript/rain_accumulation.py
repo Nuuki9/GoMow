@@ -11,6 +11,8 @@ from gomow_config import (
     RAIN_CHECKPOINT_ENTITY,
     RAIN_LAST_HOUR_ENTITY,
     RAIN_MAXIMUM_AGE_MINUTES,
+    RAIN_SENSOR_CONNECTIVITY_ENTITY,
+    RAIN_SENSOR_REACHABILITY_ENTITY,
     WETNESS_MAX_SCORE_MM,
 )
 from rain_accumulation import ingest_rolling_hour_observation
@@ -34,6 +36,13 @@ def _checkpoint():
         return parse_timestamp(state.get(RAIN_CHECKPOINT_ENTITY))
     except NameError:
         return None
+
+
+def _physical_rain_sensor_connected():
+    """Return whether both HA connectivity indicators show a live gauge."""
+    connectivity = str(state.get(RAIN_SENSOR_CONNECTIVITY_ENTITY)).lower()
+    reachability = str(state.get(RAIN_SENSOR_REACHABILITY_ENTITY)).lower()
+    return connectivity == "on" and reachability == "true"
 
 
 def _diagnostics(outcome, observation_mm, observed_at):
@@ -82,6 +91,35 @@ def ingest_rain_observation():
             },
         )
         return
+    # A dry rolling-hour value can remain unchanged for hours even while the
+    # connected gauge is healthy. Preserve the score and record that distinction
+    # rather than presenting an unchanged zero as a sensor fault.
+    sensor_connected = _physical_rain_sensor_connected()
+    is_unchanged_zero = observation_mm == 0.0 and (
+        datetime.datetime.now(datetime.timezone.utc) - observed_at
+        > datetime.timedelta(minutes=RAIN_MAXIMUM_AGE_MINUTES)
+    )
+    if is_unchanged_zero and sensor_connected:
+        rain_score_mm, dew_score_mm, unattributed_score_mm = components()
+        write_components(
+            rain_score_mm,
+            dew_score_mm,
+            unattributed_score_mm,
+            "rain_zero_unchanged_sensor_connected",
+            {
+                "rain_source_entity": RAIN_LAST_HOUR_ENTITY,
+                "rain_source_healthy": True,
+                "rain_measurement_timestamp_fresh": False,
+                "rain_sensor_connected": True,
+                "rain_source_reason": "rain_zero_unchanged_sensor_connected",
+                "rain_action": "none",
+                "rain_observation_mm": observation_mm,
+                "rain_observation_timestamp": observed_at.isoformat(),
+                "rain_observation_timestamp_origin": CHECKPOINT_TIMESTAMP_ORIGIN,
+            },
+        )
+        return
+
     outcome = ingest_rolling_hour_observation(
         observation_mm=observation_mm,
         observed_at=observed_at,

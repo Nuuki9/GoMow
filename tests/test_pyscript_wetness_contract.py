@@ -213,6 +213,27 @@ class WetnessScriptContractTests(unittest.TestCase):
         )
         self.assertEqual(self.state.values[self.config.GROUND_WETNESS_SCORE_ENTITY], 1.5)
 
+    def test_connected_gauge_with_unchanged_zero_is_not_misreported_as_a_fault(self):
+        self.ground.seed_ground_wetness_score(value=1.0)
+        self.state.values.update(
+            {
+                self.config.RAIN_LAST_HOUR_ENTITY: 0.0,
+                f"{self.config.RAIN_LAST_HOUR_ENTITY}.last_changed": (
+                    datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=4)
+                ),
+                self.config.RAIN_SENSOR_CONNECTIVITY_ENTITY: "on",
+                self.config.RAIN_SENSOR_REACHABILITY_ENTITY: "True",
+            }
+        )
+
+        self.rain.ingest_rain_observation()
+
+        attributes = self.state.attributes[self.config.GROUND_WETNESS_SCORE_ENTITY]
+        self.assertEqual(self.state.values[self.config.GROUND_WETNESS_SCORE_ENTITY], 1.0)
+        self.assertTrue(attributes["rain_source_healthy"])
+        self.assertFalse(attributes["rain_measurement_timestamp_fresh"])
+        self.assertEqual(attributes["rain_source_reason"], "rain_zero_unchanged_sensor_connected")
+
     def test_delayed_rain_event_is_rejected_without_saturating_wetness(self):
         self.ground.restore_ground_wetness_score()
         self.state.values[self.config.RAIN_LAST_HOUR_ENTITY] = 0.303

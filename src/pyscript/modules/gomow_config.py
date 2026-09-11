@@ -32,6 +32,10 @@ SOLAR_RADIATION_ENTITY = "sensor.solar_radiation"
 PRESSURE_ENTITY = "sensor.netatmo_home_indoor_pressure"
 RAINING_ENTITY = "binary_sensor.is_it_raining"
 RAIN_LAST_HOUR_ENTITY = "sensor.netatmo_home_rain_sensor_rain_last_hour"
+# Connectivity says the physical gauge remains linked to the base station; it
+# is not evidence that Home Assistant has received a new rain value.
+RAIN_SENSOR_CONNECTIVITY_ENTITY = "binary_sensor.rain_sensor_connectivity"
+RAIN_SENSOR_REACHABILITY_ENTITY = "sensor.netatmo_home_indoor_rain_sensor_reachability"
 # A persisted PyScript checkpoint prevents a rolling-hour value from being
 # reapplied across script reloads. It records the source state's virtual
 # `last_changed` timestamp, not a local receipt time.
